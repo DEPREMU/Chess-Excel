@@ -10,9 +10,9 @@ End Sub
 
 Public Sub GenericClick(ByVal ctrl As MSForms.CommandButton)
     If activePiece = "" Then Exit Sub
-    
+
     If frm Is Nothing Then Init
-    
+
     If isPossibleMove(ctrl.name) Then
         movePiece ctrl.name, activePiece
         disablePiece activePiece
@@ -29,7 +29,7 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
     name = ctrl.name
     number = Mid(name, 2, 1)
     '//! If name = "E1King" Then MsgBox CStr(isCheckMate("E1King", True))
-    
+
     If activePiece <> "" Then
         If playerOneTurn And (number = "7" Or number = "8") Then
             btn = CStr(playerTwo(name)("newPos"))
@@ -57,5 +57,5 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
         activePiece = name
         paintCases False
     End If
-    
+
 End Sub

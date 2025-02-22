@@ -6,25 +6,27 @@ Private Sub Init()
     Set frm = UserForms(0)
 End Sub
 
+
 Public Sub posPieces()
     Dim value As Variant
     
     For Each value In playerOne.keys
-        If playerOne(value)("dead") Then GoTo ContinueLoop
-        frm.Controls(value).left = frm.Controls(playerOne(value)("newPos")).left + 5
+        If playerOne(value)("dead") Then Goto ContinueLoop
+        frm.Controls(value).Left = frm.Controls(playerOne(value)("newPos")).Left + 5
         frm.Controls(value).Top = frm.Controls(playerOne(value)("newPos")).Top + 5
         
-        ContinueLoop:
+        ContinueLoop :
     Next value
     
     For Each value In playerTwo.keys
-        If playerTwo(value)("dead") Then GoTo ContinueLoop1
-        frm.Controls(value).left = frm.Controls(playerTwo(value)("newPos")).left + 5
+        If playerTwo(value)("dead") Then Goto ContinueLoop1
+        frm.Controls(value).Left = frm.Controls(playerTwo(value)("newPos")).Left + 5
         frm.Controls(value).Top = frm.Controls(playerTwo(value)("newPos")).Top + 5
         
-        ContinueLoop1:
+        ContinueLoop1 :
     Next value
 End Sub
+
 
 Public Sub swapLabels()
     If frm Is Nothing Then Init
@@ -48,6 +50,7 @@ Public Sub swapLabels()
     swapButtons
 End Sub
 
+
 Public Sub swapButtons()
     If frm Is Nothing Then Init
     
@@ -66,7 +69,7 @@ Public Sub swapButtons()
             i = 1
             j = 8
             For k = 1 To 8
-                frm.Controls(value & CStr(i)).left = buttons(letters(CStr(z)) & CStr(j))("posxy")("x")
+                frm.Controls(value & CStr(i)).Left = buttons(letters(CStr(z)) & CStr(j))("posxy")("x")
                 frm.Controls(value & CStr(i)).Top = buttons(letters(CStr(z)) & CStr(j))("posxy")("y")
                 i = i + 1
                 j = j - 1
@@ -75,7 +78,7 @@ Public Sub swapButtons()
         Next value
     Else
         For Each value In buttons.keys
-            frm.Controls(value).left = buttons(value)("posxy")("x")
+            frm.Controls(value).Left = buttons(value)("posxy")("x")
             frm.Controls(value).Top = buttons(value)("posxy")("y")
         Next value
     End If

@@ -16,24 +16,24 @@ End Sub
 
 
 Private Sub F5_Click()
-
+    
 End Sub
 
 Private Sub UserForm_Initialize()
     boolPlaying = False
     playerOneTurn = True
-    
+
     Dim isPiece As Object, posButton As Object, buttonCompleted As Object
     Dim piece1 As String, piece2 As String, buttonLocal As String
     Dim typePiece As String, possibleNextPositionP1_1 As Object
     Dim possibleNextPositionP1_2 As Object, possibleNextPositionP2_1 As Object
     Dim possibleNextPositionP2_2 As Object, ctrl As control, piece3 As String
     Dim piece4 As String
-    
+
     Set playerOne = CreateObject("Scripting.Dictionary")
     Set playerTwo = CreateObject("Scripting.Dictionary")
     Set buttons = CreateObject("Scripting.Dictionary")
-    
+
     ' Make buttons info -------------------------------------------------------
     Dim i As Integer, letter As Variant
     For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
@@ -41,48 +41,48 @@ Private Sub UserForm_Initialize()
             buttonLocal = letter & CStr(i)
             Set buttonCompleted = CreateObject("Scripting.Dictionary")
             Set posButton = CreateObject("Scripting.Dictionary")
-            posButton.Add "x", Controls(buttonLocal).left
+            posButton.Add "x", Controls(buttonLocal).Left
             posButton.Add "y", Controls(buttonLocal).Top
-            
+
             buttonCompleted.Add "isPiece", False
             buttonCompleted.Add "posxy", posButton
             buttonCompleted.Add "bgcolor", &H8000000F
             buttonCompleted.Add "player", 0
             buttonCompleted.Add "name", buttonLocal
-            
+
             Dim bool1 As Boolean, bool2 As Boolean
             bool1 = (letter = "A" Or letter = "C" Or letter = "E" Or letter = "G") And (i = 1 Or i = 3 Or i = 5 Or i = 7)
             bool2 = (letter = "B" Or letter = "D" Or letter = "F" Or letter = "H") And (i = 2 Or i = 4 Or i = 6 Or i = 8)
             If bool1 Or bool2 Then
-                buttonCompleted("bgcolor") = &H0&
+                buttonCompleted("bgcolor") = &H0 &
             End If
             buttons.Add buttonLocal, buttonCompleted
             Controls(buttonLocal).Enabled = False
         Next i
     Next letter
-    
+
     ' Pawns pieces -------------------------------------------------------------
     For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
         Set chessPiece1 = CreateObject("Scripting.Dictionary")
         Set chessPiece2 = CreateObject("Scripting.Dictionary")
         Set possibleNextPositionP1 = CreateObject("Scripting.Dictionary")
         Set possibleNextPositionP2 = CreateObject("Scripting.Dictionary")
-        
+
         possibleNextPositionP1.Add "1", letter & "3"
         possibleNextPositionP1.Add "2", letter & "4"
         possibleNextPositionP2.Add "1", letter & "6"
         possibleNextPositionP2.Add "2", letter & "5"
-        
+
         piece1 = CStr(letter) & "2"
         piece2 = CStr(letter) & "7"
-        
+
         buttons(piece1)("isPiece") = True
         buttons(piece2)("isPiece") = True
         buttons(piece1)("player") = 1
         buttons(piece2)("player") = 2
         buttons(piece1)("piece") = piece1 & "Pawn"
         buttons(piece2)("piece") = piece2 & "Pawn"
-        
+
         chessPiece1.Add "firstPos", piece1
         chessPiece2.Add "firstPos", piece2
         chessPiece1.Add "newPos", piece1
@@ -99,11 +99,11 @@ Private Sub UserForm_Initialize()
         chessPiece2.Add "danger", False
         chessPiece1.Add "pieceEater", Empty
         chessPiece2.Add "pieceEater", Empty
-        
+
         playerOne.Add piece1 & "Pawn", chessPiece1
         playerTwo.Add piece2 & "Pawn", chessPiece2
     Next letter
-    
+
     ' Pieces A->C And F->H -----------------------------------------------------
     For i = 1 To 3
         Set possibleNextPositionP1_1 = CreateObject("Scripting.Dictionary")
@@ -114,7 +114,7 @@ Private Sub UserForm_Initialize()
         Set pieceP1_2 = CreateObject("Scripting.Dictionary")
         Set pieceP2_1 = CreateObject("Scripting.Dictionary")
         Set pieceP2_2 = CreateObject("Scripting.Dictionary")
-        
+
         If i = 1 Then
             typePiece = "Rook"
             ' Player one
@@ -132,7 +132,7 @@ Private Sub UserForm_Initialize()
             possibleNextPositionP1_1.Add "2", "C3"
             possibleNextPositionP1_2.Add "1", "F3"
             possibleNextPositionP1_2.Add "2", "H3"
-            
+
             ' Player two
             piece3 = "B8"
             piece4 = "G8"
@@ -149,7 +149,7 @@ Private Sub UserForm_Initialize()
             piece3 = "C8"
             piece4 = "F8"
         End If
-        
+
         ' Player one
         pieceP1_1.Add "firstPos", piece1
         pieceP1_2.Add "firstPos", piece2
@@ -165,7 +165,7 @@ Private Sub UserForm_Initialize()
         pieceP1_2.Add "firstMove", True
         pieceP1_1.Add "pieceEater", Empty
         pieceP1_2.Add "pieceEater", Empty
-        
+
         ' Player two
         pieceP2_1.Add "firstPos", piece3
         pieceP2_2.Add "firstPos", piece4
@@ -181,48 +181,48 @@ Private Sub UserForm_Initialize()
         pieceP2_2.Add "firstMove", True
         pieceP2_1.Add "pieceEater", Empty
         pieceP2_2.Add "pieceEater", Empty
-        
-        
+
+
         buttons(piece1)("isPiece") = True
         buttons(piece2)("isPiece") = True
         buttons(piece3)("isPiece") = True
         buttons(piece4)("isPiece") = True
-        
+
         buttons(piece1)("piece") = piece1 & typePiece
         buttons(piece2)("piece") = piece2 & typePiece
         buttons(piece3)("piece") = piece3 & typePiece
         buttons(piece4)("piece") = piece4 & typePiece
-        
+
         buttons(piece1)("player") = 1
         buttons(piece2)("player") = 1
         buttons(piece3)("player") = 2
         buttons(piece4)("player") = 2
-        
+
         playerOne.Add piece1 & typePiece, pieceP1_1
         playerOne.Add piece2 & typePiece, pieceP1_2
-        
+
         playerTwo.Add piece3 & typePiece, pieceP2_1
         playerTwo.Add piece4 & typePiece, pieceP2_2
-        
+
     Next i
-    
+
     ' Queens -------------------------------------------------------------------
-    
+
     Set chessPiece1 = CreateObject("Scripting.Dictionary")
     Set chessPiece2 = CreateObject("Scripting.Dictionary")
     Set possibleNextPositionP1 = CreateObject("Scripting.Dictionary")
     Set possibleNextPositionP2 = CreateObject("Scripting.Dictionary")
-    
+
     piece1 = "D1"
     piece2 = "D8"
-    
+
     buttons(piece1)("isPiece") = True
     buttons(piece2)("isPiece") = True
     buttons(piece1)("player") = 1
     buttons(piece2)("player") = 2
     buttons(piece1)("piece") = piece1 & "Queen"
     buttons(piece2)("piece") = piece2 & "Queen"
-    
+
     chessPiece1.Add "firstPos", piece1
     chessPiece2.Add "firstPos", piece2
     chessPiece1.Add "newPos", piece1
@@ -237,27 +237,27 @@ Private Sub UserForm_Initialize()
     chessPiece2.Add "firstMove", True
     chessPiece1.Add "pieceEater", Empty
     chessPiece2.Add "pieceEater", Empty
-    
-    
+
+
     playerOne.Add piece1 & "Queen", chessPiece1
     playerTwo.Add piece2 & "Queen", chessPiece2
-    
+
     ' King ---------------------------------------------------------------------
     Set chessPiece1 = CreateObject("Scripting.Dictionary")
     Set chessPiece2 = CreateObject("Scripting.Dictionary")
     Set possibleNextPositionP1 = CreateObject("Scripting.Dictionary")
     Set possibleNextPositionP2 = CreateObject("Scripting.Dictionary")
-    
+
     piece1 = "E1"
     piece2 = "E8"
-    
+
     buttons(piece1)("isPiece") = True
     buttons(piece2)("isPiece") = True
     buttons(piece1)("player") = 1
     buttons(piece2)("player") = 2
     buttons(piece1)("piece") = piece1 & "King"
     buttons(piece2)("piece") = piece2 & "King"
-    
+
     chessPiece1.Add "firstPos", piece1
     chessPiece2.Add "firstPos", piece2
     chessPiece1.Add "newPos", piece1
@@ -274,10 +274,10 @@ Private Sub UserForm_Initialize()
     chessPiece2.Add "danger", False
     chessPiece1.Add "pieceEater", Empty
     chessPiece2.Add "pieceEater", Empty
-    
+
     playerOne.Add piece1 & "King", chessPiece1
     playerTwo.Add piece2 & "King", chessPiece2
-    
+
     ' Make controls dinamically -----------------------------------------------
     i = 0
     For Each ctrl In Me.Controls
@@ -293,12 +293,12 @@ Private Sub UserForm_Initialize()
             i = i + 1
         End If
     Next ctrl
-    
+
 End Sub
 
 Private Sub handleButtons()
     Dim button As Variant
-    
+
     For Each button In buttons.keys
         Controls(button).Enabled = Not Controls(button).Enabled
     Next button
@@ -308,7 +308,7 @@ Private Sub swapLabels()
     Dim i As Integer
     Dim letters As String
     Dim numbers As String
-    
+
     If LA.Caption = "A" Then
         letters = "HGFEDCBA"
         numbers = "87654321"
@@ -316,7 +316,7 @@ Private Sub swapLabels()
         letters = "ABCDEFGH"
         numbers = "12345678"
     End If
-    
+
     For i = 1 To 8
         Controls("L" & Chr(64 + i)).Caption = Mid(letters, i, 1)
         Controls("L" & i).Caption = Mid(numbers, i, 1)

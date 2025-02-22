@@ -31,34 +31,34 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
     
     If boolPlayerOne Then
         For Each pieceP2 In playerTwo.keys
-            If playerTwo(pieceP2)("dead") Then GoTo ContinueLoopP1
+            If playerTwo(pieceP2)("dead") Then Goto ContinueLoopP1
             availablePosP2 = getAvailablePosP2(CStr(pieceP2))
-            If IsEmpty(availablePosP2) Then GoTo ContinueLoopP1
+            If IsEmpty(availablePosP2) Then Goto ContinueLoopP1
             
             If ArrayContains(availablePosP2, position) Then
                 isCheck = True
                 Exit Function
             End If
             
-ContinueLoopP1:
+            ContinueLoopP1 :
         Next pieceP2
         
     Else
         For Each pieceP1 In playerOne.keys
-            If playerOne(pieceP1)("dead") Then GoTo ContinueLoopP2
+            If playerOne(pieceP1)("dead") Then Goto ContinueLoopP2
             availablePosP1 = getAvailablePosP1(CStr(pieceP1))
-            If IsEmpty(availablePosP1) Then GoTo ContinueLoopP2
+            If IsEmpty(availablePosP1) Then Goto ContinueLoopP2
             
             If ArrayContains(availablePosP1, position) Then
                 isCheck = True
                 Exit Function
             End If
             
-ContinueLoopP2:
+            ContinueLoopP2 :
         Next pieceP1
         
     End If
-isCheck = False
+    isCheck = False
 End Function
 
 
@@ -101,4 +101,3 @@ Public Function isCheckMate(piece As String, boolPlayerOne As Boolean) As Boolea
     End If
     isCheckMate = False
 End Function
-

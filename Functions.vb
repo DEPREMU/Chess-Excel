@@ -1,4 +1,4 @@
-Public Function range(start As Integer, stop1 As Variant, Optional step As Integer = 1) As Variant
+Public Function range(start As Integer, stop1 As Variant, Optional Step As Integer = 1) As Variant
     Dim result As Object
     Dim i As Integer
     
@@ -9,15 +9,15 @@ Public Function range(start As Integer, stop1 As Variant, Optional step As Integ
         start = 0
     End If
     
-    If step > 0 Then
-        For i = start To stop1 - 1 Step step
+    If Step > 0 Then
+        For i = start To stop1 - 1 Step Step
             result.Add i, True
         Next i
     Else
         i = start
         Do While i <> stop1
             result.Add i, True
-            i = i + step
+            i = i + Step
         Loop
     End If
     
@@ -30,7 +30,7 @@ Public Function ArrayContains(arr As Variant, value As Variant) As Boolean
         ArrayContains = False
         Exit Function
     End If
-
+    
     For Each element In arr
         If element = value Then
             ArrayContains = True
@@ -67,7 +67,7 @@ End Function
 
 
 
-Public Function deleteFromArr(arr As Variant, value As Variant, Optional count As Integer = -1) As Variant
+Public Function deleteFromArr(arr As Variant, value As Variant, Optional count As Integer = - 1) As Variant
     Dim newArr As Object
     Dim localCount As Integer
     Dim i As Integer
@@ -94,7 +94,7 @@ Public Function deleteFromArr(arr As Variant, value As Variant, Optional count A
             End If
         Next item
     End If
-
+    
     If newArr.count = 0 Then
         deleteFromArr = Empty
     Else
@@ -107,20 +107,20 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
     Dim i As Integer
     Dim item As Variant
     
-
+    
     Set newArr = CreateObject("Scripting.Dictionary")
-
+    
     If IsEmpty(arr) Then
         addToArr = Array(value)
         Exit Function
     End If
-
+    
     i = 0
     For Each item In arr
         newArr.Add i, item
         i = i + 1
     Next item
-
+    
     newArr.Add i, value
     If IsEmpty(newArr.items) Then
         addToArr = Empty
@@ -128,5 +128,3 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
     End If
     addToArr = newArr.items
 End Function
-
-
