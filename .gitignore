@@ -1,1 +1,6 @@
 rand/
+random/
+*.py
+*.js
+*.html
+*.php
