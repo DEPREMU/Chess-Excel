@@ -10,9 +10,9 @@ End Sub
 
 Public Sub GenericClick(ByVal ctrl As MSForms.CommandButton)
     If activePiece = "" Then Exit Sub
-
+    
     If frm Is Nothing Then Init
-
+    
     If isPossibleMove(ctrl.name) Then
         movePiece ctrl.name, activePiece
         disablePiece activePiece
@@ -24,11 +24,17 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
     If Not boolPlaying Then Exit Sub
 
     If frm Is Nothing Then Init
-    Dim name As String, btn As String, number As String
+    Dim name As String
+    Dim btn As String
+    Dim number As String
     Dim maxValues As Integer
+    Dim values As Variant
     name = ctrl.name
     number = Mid(name, 2, 1)
-    '! If name = "E1King" Then MsgBox CStr(isCheckMate("E1King", True))
+    values = getAvailablePosP1("E1King")
+    
+    
+    '? Make sure the player is not in check
 
     If activePiece <> "" Then
         If playerOneTurn And (number = "7" Or number = "8") Then
@@ -57,5 +63,5 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
         activePiece = name
         paintCases False
     End If
-
+    
 End Sub

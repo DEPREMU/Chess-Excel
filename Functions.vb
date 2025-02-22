@@ -1,14 +1,14 @@
 Public Function range(start As Integer, stop1 As Variant, Optional Step As Integer = 1) As Variant
     Dim result As Object
     Dim i As Integer
-    
+
     Set result = CreateObject("Scripting.Dictionary")
-    
+
     If IsMissing(stop1) Then
         stop1 = start
         start = 0
     End If
-    
+
     If Step > 0 Then
         For i = start To stop1 - 1 Step Step
             result.Add i, True
@@ -20,7 +20,7 @@ Public Function range(start As Integer, stop1 As Variant, Optional Step As Integ
             i = i + Step
         Loop
     End If
-    
+
     range = result.keys
 End Function
 
@@ -45,9 +45,9 @@ Public Function equalsValuesArrs(arr1 As Variant, arr2 As Variant) As Variant
     Dim value As Variant
     Dim valueToReturn As Object
     Dim i As Integer
-    
+
     Set valueToReturn = CreateObject("Scripting.Dictionary")
-    
+
     i = 1
     For Each value In arr1
         If ArrayContains(arr2, value) Then
@@ -55,13 +55,13 @@ Public Function equalsValuesArrs(arr1 As Variant, arr2 As Variant) As Variant
             i = i + 1
         End If
     Next value
-    
+
     If IsEmpty(valueToReturn.items) Then
         equalsValuesArrs = Empty
     Else
         equalsValuesArrs = valueToReturn.items
     End If
-    
+
     Exit Function
 End Function
 
@@ -72,12 +72,12 @@ Public Function deleteFromArr(arr As Variant, value As Variant, Optional count A
     Dim localCount As Integer
     Dim i As Integer
     Dim item As Variant
-    
+
     Set newArr = CreateObject("Scripting.Dictionary")
     localCount = 1
-    
+
     i = 0
-    If count > 0 Then
+    If count <= 0 Then
         For Each item In arr
             If item <> value Then
                 newArr.Add i, item
@@ -106,7 +106,7 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
     Dim newArr As Object
     Dim i As Integer
     Dim item As Variant
-    
+
     
     Set newArr = CreateObject("Scripting.Dictionary")
     
@@ -115,16 +115,24 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
         Exit Function
     End If
     
-    i = 0
+    i = 1
     For Each item In arr
-        newArr.Add i, item
-        i = i + 1
+        If Not ArrayContains(newArr.items, item) Then
+            newArr.Add i, item
+            i = i + 1
+        End If
     Next item
     
-    newArr.Add i, value
-    If IsEmpty(newArr.items) Then
-        addToArr = Empty
+    If Not ArrayContains(newArr.items, value) Then
+        newArr.Add i, value
+        i = i + 1
+    End If
+
+    If i = 1 Then
+        addToArr = Array(value)
         Exit Function
     End If
     addToArr = newArr.items
 End Function
+
+

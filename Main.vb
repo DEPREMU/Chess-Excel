@@ -12,6 +12,7 @@ Public piecesEatenP1 As Integer
 Public piecesEatenP2 As Integer
 
 
+
 Dim frm As UserForm
 Dim i As Integer
 Dim j As Integer
@@ -20,14 +21,6 @@ Dim value As Variant
 
 Private Sub Init()
     Set frm = UserForms(0)
-    Set letters = CreateObject("Scripting.Dictionary")
-    Set numbers = CreateObject("Scripting.Dictionary")
-    i = 1
-    For Each value In Array("A", "B", "C", "D", "E", "F", "G", "H")
-        numbers.Add value, i
-        letters.Add CStr(i), value
-        i = i + 1
-    Next value
 End Sub
 
 Public Sub Delay(milliseconds As Single)
@@ -41,21 +34,20 @@ End Sub
 Public Function isPossibleMove(button As String) As Boolean
     Dim i As Integer
     Dim value As Variant
+    isPossibleMove = False
     If playerOneTurn Then
-        If IsEmpty(playerOne(activePiece)("nextPos")) Then
-            isPossibleMove = False
-            Exit Function
+        If IsEmpty(playerOne(activePiece)("nextPos")) Then Exit Function
+        If activePiece = "E1King" Then
+            If isCheck(activePiece, button, True) Then Exit Function
         End If
         If ArrayContains(playerOne(activePiece)("nextPos"), button) Then isPossibleMove = True
     Else
-        If IsEmpty(playerTwo(activePiece)("nextPos")) Then
-            isPossibleMove = False
-            Exit Function
+        If IsEmpty(playerTwo(activePiece)("nextPos")) Then Exit Function
+        If activePiece = "E8King" Then
+            If isCheck(activePiece, button, False) Then Exit Function
         End If
         If ArrayContains(playerTwo(activePiece)("nextPos"), button) Then isPossibleMove = True
     End If
-
-    If Not isPossibleMove Then isPossibleMove = False
 End Function
 
 Public Sub disablePiece(piece As String)
@@ -69,24 +61,13 @@ Public Sub disablePiece(piece As String)
     Set newPos = CreateObject("Scripting.Dictionary")
     frm.Controls(piece).BorderStyle = fmBorderStyleNone
 
-
+    rePaintCases
     If playerOneTurn Then
-        If Not IsEmpty(playerOne(piece)("nextPos")) Then
-            For Each value In playerOne(piece)("nextPos")
-                frm.Controls(value).BackColor = buttons(value)("bgcolor")
-            Next value
-        End If
         If Not playerOne(piece)("moved") Then Exit Sub
         playerOne(piece)("nextPos") = getAvailablePosP1(piece)
         playerOne(piece)("moved") = False
         '! swapLabels
     Else
-        If Not IsEmpty(playerTwo(piece)("nextPos")) Then
-            For Each value In playerTwo(piece)("nextPos")
-                frm.Controls(value).BackColor = buttons(value)("bgcolor")
-            Next value
-        End If
-
         If Not playerTwo(piece)("moved") Then Exit Sub
         playerTwo(piece)("nextPos") = getAvailablePosP2(piece)
         playerTwo(piece)("moved") = False
@@ -95,6 +76,9 @@ Public Sub disablePiece(piece As String)
     pieceActived = activePiece
     activePiece = ""
     playerOneTurn = Not playerOneTurn
+    checkGameStatus(piece)
+
+
 End Sub
 
 
@@ -114,25 +98,33 @@ End Function
 
 
 Public Sub paintCases(boolPlayerOne As Boolean)
-    Dim value As Variant
-    Dim values As Variant
+    Dim pos As Variant
+    Dim availablePos As Variant
 
     If frm Is Nothing Then Init
 
     If boolPlayerOne Then
-        values = updateMoves(activePiece, True)
-        If IsEmpty(values) Then Exit Sub
-        For Each value In values
-            If Mid(playerOne(activePiece)("newPos"), 1, 2) <> value Then frm.Controls(value).BackColor = &H80FFFF
-        Next value
+        availablePos = updateMoves(activePiece, True)
+        If IsEmpty(availablePos) Then Exit Sub
+        For Each pos In availablePos
+            If activePiece = "E1King" And isCheck(activePiece, CStr(pos), True) Then
+                frm.Controls(pos).BackColor = &H80 &
+            Else
+                frm.Controls(pos).BackColor = &H80FFFF
+            End If
+        Next pos
     Else
-        values = updateMoves(activePiece, False)
-        If IsEmpty(values) Then Exit Sub
-        For Each value In values
-            If Mid(playerTwo(activePiece)("newPos"), 1, 2) <> value Then frm.Controls(value).BackColor = &H80FFFF
-        Next value
+        availablePos = updateMoves(activePiece, False)
+        If IsEmpty(availablePos) Then Exit Sub
+        For Each pos In availablePos
+            If activePiece = "E8King" And isCheck(activePiece, CStr(pos), False) Then
+                frm.Controls(pos).BackColor = &H80 &
+            Else
+                frm.Controls(pos).BackColor = &H80FFFF
+            End If
+        Next pos
     End If
-
+    
 End Sub
 
 Public Function movePiece(button As String, piece As String)
@@ -169,7 +161,6 @@ Public Function movePiece(button As String, piece As String)
         playerOne(piece)("newPos") = button
         playerOne(piece)("moved") = True
         playerOne(piece)("firstMove") = False
-        checkGameStatus(piece)
     Else
         If piece = "E8King" Then
             If button = "G8" Then movePiece "F8", "H8Rook"
@@ -199,6 +190,5 @@ Public Function movePiece(button As String, piece As String)
         playerTwo(piece)("newPos") = button
         playerTwo(activePiece)("moved") = True
         playerTwo(activePiece)("firstMove") = False
-        checkGameStatus(piece)
     End If
 End Function
