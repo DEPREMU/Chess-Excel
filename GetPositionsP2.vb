@@ -29,7 +29,7 @@ Public Function getAvailablePosP2(piece As String) As Variant
             indexLetter = numbers(letter)
             number = Mid(playerTwo(piece)("newPos"), 2, 1)
 
-            ' Move forward
+            '? Move forward
             If CInt(number) > 1 Then
                 btn = letter & CStr(CInt(number) - 1)
                 If Not buttons(btn)("isPiece") Then
@@ -38,7 +38,7 @@ Public Function getAvailablePosP2(piece As String) As Variant
                 End If
             End If
 
-            ' Capture diagonally left
+            '? Capture diagonally left
             If indexLetter > 1 And CInt(number) > 1 Then
                 btn = letters(CStr(indexLetter - 1)) & CStr(CInt(number) - 1)
                 If buttons(btn)("player") = 1 Then
@@ -48,7 +48,7 @@ Public Function getAvailablePosP2(piece As String) As Variant
                 End If
             End If
 
-            ' Capture diagonally right
+            '? Capture diagonally right
             If indexLetter < 8 And CInt(number) > 1 Then
                 btn = letters(CStr(indexLetter + 1)) & CStr(CInt(number) - 1)
                 If buttons(btn)("player") = 1 Then
@@ -178,13 +178,13 @@ Public Function posiblePosKingP2(piece As String, position As String) As Variant
     Next i
 
     If playerTwo(piece)("firstMove") Then
-        ' Enroque corto
+        '? Enroque corto
         If Not buttons("F8")("isPiece") And Not buttons("G8")("isPiece") And playerTwo("H8Rook")("firstMove") Then
             availablePos.Add "G8", True
             valuesAdded = valuesAdded + 1
         End If
 
-        ' Enroque largo
+        '? Enroque largo
         If Not buttons("B8")("isPiece") And Not buttons("C8")("isPiece") And Not buttons("D8")("isPiece") And playerTwo("A8Rook")("firstMove") Then
             availablePos.Add "C8", True
             valuesAdded = valuesAdded + 1
@@ -216,7 +216,7 @@ Public Function getAvailablePosRookP2(piece As String) As Variant
     indexLetter = numbers(letter)
     number = Mid(playerTwo(piece)("newPos"), 2, 1)
 
-    ' Top
+    '? Top
     For i = CInt(number) + 1 To 8
         btn = letter & CStr(i)
         If buttons(btn)("isPiece") Then
@@ -232,7 +232,7 @@ Public Function getAvailablePosRookP2(piece As String) As Variant
         availablePos.Add btn, True
     Next i
 
-    ' Bottom
+    '? Bottom
     For Each value In range(CInt(number), 0, - 1)
         If number <> value And value Then
             btn = letter & CStr(value)
@@ -250,7 +250,7 @@ Public Function getAvailablePosRookP2(piece As String) As Variant
         End If
     Next value
 
-    ' Left
+    '? Left
     For Each value In Array("H", "G", "F", "E", "D", "C", "B", "A")
         If indexLetter = 1 Then Exit For
         If indexLetter < numbers(value) Or value = letter Then Goto ContinueLoop
@@ -272,7 +272,7 @@ Public Function getAvailablePosRookP2(piece As String) As Variant
         ContinueLoop :
     Next value
 
-    ' Right
+    '? Right
     For Each value In Array("A", "B", "C", "D", "E", "F", "G", "H")
         If indexLetter = 8 Then Exit For
         If numbers(value) > indexLetter Then
@@ -316,7 +316,7 @@ Public Function getAvailablePosBishopP2(piece As String) As Variant
     indexLetter = numbers(letter)
     number = Mid(playerTwo(piece)("newPos"), 2, 1)
 
-    ' Top Left
+    '? Top Left
     i = indexLetter
     j = CInt(number)
     Do While i > 1 And j < 8
@@ -336,7 +336,7 @@ Public Function getAvailablePosBishopP2(piece As String) As Variant
         valuesAdded = valuesAdded + 1
     Loop
 
-    ' Top Right
+    '? Top Right
     i = indexLetter
     j = CInt(number)
     Do While i < 8 And j < 8
@@ -356,7 +356,7 @@ Public Function getAvailablePosBishopP2(piece As String) As Variant
         valuesAdded = valuesAdded + 1
     Loop
 
-    ' Bottom Left
+    '? Bottom Left
     i = indexLetter
     j = CInt(number)
     Do While i > 1 And j > 1
@@ -376,7 +376,7 @@ Public Function getAvailablePosBishopP2(piece As String) As Variant
         valuesAdded = valuesAdded + 1
     Loop
 
-    ' Bottom Right
+    '? Bottom Right
     i = indexLetter
     j = CInt(number)
     Do While i < 8 And j > 1

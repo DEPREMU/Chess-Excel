@@ -34,7 +34,7 @@ Private Sub UserForm_Initialize()
     Set playerTwo = CreateObject("Scripting.Dictionary")
     Set buttons = CreateObject("Scripting.Dictionary")
 
-    ' Make buttons info -------------------------------------------------------
+    '? Make buttons info -------------------------------------------------------
     Dim i As Integer, letter As Variant
     For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
         For i = 1 To 8
@@ -61,7 +61,7 @@ Private Sub UserForm_Initialize()
         Next i
     Next letter
 
-    ' Pawns pieces -------------------------------------------------------------
+    '? Pawns pieces -------------------------------------------------------------
     For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
         Set chessPiece1 = CreateObject("Scripting.Dictionary")
         Set chessPiece2 = CreateObject("Scripting.Dictionary")
@@ -104,7 +104,7 @@ Private Sub UserForm_Initialize()
         playerTwo.Add piece2 & "Pawn", chessPiece2
     Next letter
 
-    ' Pieces A->C And F->H -----------------------------------------------------
+    '? Pieces A->C And F->H -----------------------------------------------------
     For i = 1 To 3
         Set possibleNextPositionP1_1 = CreateObject("Scripting.Dictionary")
         Set possibleNextPositionP1_2 = CreateObject("Scripting.Dictionary")
@@ -117,15 +117,15 @@ Private Sub UserForm_Initialize()
 
         If i = 1 Then
             typePiece = "Rook"
-            ' Player one
+            '? Player one
             piece1 = "A1"
             piece2 = "H1"
-            ' Player two
+            '? Player two
             piece3 = "A8"
             piece4 = "H8"
         ElseIf i = 2 Then
             typePiece = "Knight"
-            ' Player one
+            '? Player one
             piece1 = "B1"
             piece2 = "G1"
             possibleNextPositionP1_1.Add "1", "A3"
@@ -133,7 +133,7 @@ Private Sub UserForm_Initialize()
             possibleNextPositionP1_2.Add "1", "F3"
             possibleNextPositionP1_2.Add "2", "H3"
 
-            ' Player two
+            '? Player two
             piece3 = "B8"
             piece4 = "G8"
             possibleNextPositionP2_1.Add "1", "A6"
@@ -142,15 +142,15 @@ Private Sub UserForm_Initialize()
             possibleNextPositionP2_2.Add "2", "H6"
         ElseIf i = 3 Then
             typePiece = "Bishop"
-            ' Player one
+            '? Player one
             piece1 = "C1"
             piece2 = "F1"
-            'Player two
+            '?Player two
             piece3 = "C8"
             piece4 = "F8"
         End If
 
-        ' Player one
+        '? Player one
         pieceP1_1.Add "firstPos", piece1
         pieceP1_2.Add "firstPos", piece2
         pieceP1_1.Add "newPos", piece1
@@ -166,7 +166,7 @@ Private Sub UserForm_Initialize()
         pieceP1_1.Add "pieceEater", Empty
         pieceP1_2.Add "pieceEater", Empty
 
-        ' Player two
+        '? Player two
         pieceP2_1.Add "firstPos", piece3
         pieceP2_2.Add "firstPos", piece4
         pieceP2_1.Add "newPos", piece3
@@ -206,7 +206,7 @@ Private Sub UserForm_Initialize()
 
     Next i
 
-    ' Queens -------------------------------------------------------------------
+    '? Queens -------------------------------------------------------------------
 
     Set chessPiece1 = CreateObject("Scripting.Dictionary")
     Set chessPiece2 = CreateObject("Scripting.Dictionary")
@@ -242,7 +242,7 @@ Private Sub UserForm_Initialize()
     playerOne.Add piece1 & "Queen", chessPiece1
     playerTwo.Add piece2 & "Queen", chessPiece2
 
-    ' King ---------------------------------------------------------------------
+    '? King ---------------------------------------------------------------------
     Set chessPiece1 = CreateObject("Scripting.Dictionary")
     Set chessPiece2 = CreateObject("Scripting.Dictionary")
     Set possibleNextPositionP1 = CreateObject("Scripting.Dictionary")
@@ -278,7 +278,7 @@ Private Sub UserForm_Initialize()
     playerOne.Add piece1 & "King", chessPiece1
     playerTwo.Add piece2 & "King", chessPiece2
 
-    ' Make controls dinamically -----------------------------------------------
+    '? Make controls dinamically -----------------------------------------------
     i = 0
     For Each ctrl In Me.Controls
         If TypeName(ctrl) = "CommandButton" Then

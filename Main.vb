@@ -79,7 +79,7 @@ Public Sub disablePiece(piece As String)
         If Not playerOne(piece)("moved") Then Exit Sub
         playerOne(piece)("nextPos") = getAvailablePosP1(piece)
         playerOne(piece)("moved") = False
-        '//! swapLabels
+        '! swapLabels
     Else
         If Not IsEmpty(playerTwo(piece)("nextPos")) Then
             For Each value In playerTwo(piece)("nextPos")
@@ -90,7 +90,7 @@ Public Sub disablePiece(piece As String)
         If Not playerTwo(piece)("moved") Then Exit Sub
         playerTwo(piece)("nextPos") = getAvailablePosP2(piece)
         playerTwo(piece)("moved") = False
-        '//! swapLabels
+        '! swapLabels
     End If
     pieceActived = activePiece
     activePiece = ""

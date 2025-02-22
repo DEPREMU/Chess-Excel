@@ -28,7 +28,7 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
     Dim maxValues As Integer
     name = ctrl.name
     number = Mid(name, 2, 1)
-    '//! If name = "E1King" Then MsgBox CStr(isCheckMate("E1King", True))
+    '! If name = "E1King" Then MsgBox CStr(isCheckMate("E1King", True))
 
     If activePiece <> "" Then
         If playerOneTurn And (number = "7" Or number = "8") Then
