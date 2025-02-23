@@ -1,9 +1,9 @@
-Public Function getAvailablePosP1(piece As String) As Variant
+Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Variant) As Variant
+    getAvailablePosP1 = Empty
 
-    If playerOne(piece)("dead") Then
-        getAvailablePosP1 = Empty
-        Exit Function
-    End If
+    If playerOne(piece)("dead") Then Exit Function
+
+    If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
 
     Dim pieceType As String
     Dim indexLetter As Integer
@@ -62,12 +62,8 @@ Public Function getAvailablePosP1(piece As String) As Variant
             End If
 
         Case "Rook"
-            values = getPosLeftRightTopBottomP1(piece)
-            If IsEmpty(values) Then
-                getAvailablePosP1 = Empty
-            Else
-                getAvailablePosP1 = values
-            End If
+            values = getPosRookP1(piece, emulatePiece)
+            If Not IsEmpty(values) Then getAvailablePosP1 = values
             Exit Function
 
         Case "Knight"
@@ -80,7 +76,7 @@ Public Function getAvailablePosP1(piece As String) As Variant
             indexLetter = numbers(letter)
             number = CInt(Mid(position, 2, 1))
 
-            offsets = Array(Array(2, - 1), Array(2, 1), Array( - 2, - 1), Array( - 2, 1), Array(1, - 2), Array(1, 2), Array( - 1, - 2), Array( - 1, 2))
+            offsets = Array(Array(2, -1), Array(2, 1), Array(-2, -1), Array(-2, 1), Array(1, -2), Array(1, 2), Array(-1, -2), Array(-1, 2))
 
             For i = LBound(offsets) To UBound(offsets)
                 newNum = number + offsets(i)(0)
@@ -102,41 +98,28 @@ Public Function getAvailablePosP1(piece As String) As Variant
 
         Case "Bishop"
             values = getPosBishopP1(piece)
-            If IsEmpty(values) Then
-                values = Empty
-            Else
-                For Each value In values
-                    availablePos.Add value, True
-                Next value
-            End If
+            If Not IsEmpty(values) Then getAvailablePosP1 = values
+            Exit Function
 
         Case "Queen"
 
-            values = getPosLeftRightTopBottomP1(piece)
-            If IsEmpty(values) Then
-                values = Empty
-            Else
+            values = getPosRookP1(piece, emulatePiece)
+            If Not IsEmpty(values) Then
                 For Each value In values
                     availablePos.Add value, True
                 Next value
             End If
 
-            values = getPosBishopP1(piece)
-            If IsEmpty(values) Then
-                values = Empty
-            Else
+            values = getPosBishopP1(piece, emulatePiece)
+            If Not IsEmpty(values) Then
                 For Each value In values
                     availablePos.Add value, True
                 Next value
             End If
 
         Case "King"
-            values = possiblePosKingP1(piece, CStr(playerOne(piece)("newPos")))
-            If IsEmpty(values) Then
-                getAvailablePosP1 = Empty
-            Else
-                getAvailablePosP1 = values
-            End If
+            values = getPosKingP1(piece, CStr(playerOne(piece)("newPos")))
+            If Not IsEmpty(values) Then getAvailablePosP1 = values
             Exit Function
     End Select
 
@@ -147,14 +130,12 @@ Public Function getAvailablePosP1(piece As String) As Variant
             i = i + 1
         End If
     Next value
-    If i = 1 Then
-        getAvailablePosP1 = Empty
-        Exit Function
-    End If
+    If i = 1 Then Exit Function
+
     getAvailablePosP1 = valueToReturn.items
 End Function
 
-Public Function possiblePosKingP1(piece As String, position As String) As Variant
+Public Function getPosKingP1(piece As String, position As String) As Variant
 
     Dim letter As String
     Dim indexLetter As Integer
@@ -169,7 +150,7 @@ Public Function possiblePosKingP1(piece As String, position As String) As Varian
     valuesAdded = 0
 
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
+    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
 
     For i = LBound(directions) To UBound(directions)
 
@@ -199,13 +180,13 @@ Public Function possiblePosKingP1(piece As String, position As String) As Varian
         End If
     End If
     If valuesAdded = 0 Then
-        possiblePosKingP1 = Empty
+        getPosKingP1 = Empty
     Else
-        possiblePosKingP1 = availablePos.keys
+        getPosKingP1 = availablePos.keys
     End If
 End Function
 
-Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
+Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) As Variant
     Dim letter As String
     Dim indexLetter As Integer
     Dim number As String
@@ -214,6 +195,8 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
     Set availablePos = CreateObject("Scripting.Dictionary")
     valuesAdded = 0
 
+    If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+
     letter = Mid(playerOne(piece)("newPos"), 1, 1)
     indexLetter = numbers(letter)
     number = Mid(playerOne(piece)("newPos"), 2, 1)
@@ -221,7 +204,13 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
     ' Top
     For i = CInt(number) + 1 To 8
         btn = letter & CStr(i)
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit For
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 availablePos.Add btn, True
                 valuesAdded = valuesAdded + 1
@@ -233,12 +222,18 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Next i
-
+    
     ' Bottom
-    For Each value In range(CInt(number), 0, - 1)
+    For Each value In range(CInt(number), 0, -1)
         If number <> value And value Then
             btn = letter & CStr(value)
-            If buttons(btn)("isPiece") Then
+            If emulatePiece(1) = btn Then
+                availablePos.Add btn, True
+                valuesAdded = valuesAdded + 1
+                playerTwo(emulatePiece(0))("danger") = True
+                playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+                Exit For
+            ElseIf buttons(btn)("isPiece") Then
                 If buttons(btn)("player") = 2 Then
                     availablePos.Add btn, True
                     valuesAdded = valuesAdded + 1
@@ -251,14 +246,20 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
             valuesAdded = valuesAdded + 1
         End If
     Next value
-
+    
     ' Left
     For Each value In Array("H", "G", "F", "E", "D", "C", "B", "A")
         If indexLetter = 1 Then Exit For
-        If indexLetter < numbers(value) Or value = letter Then Goto ContinueLoop
+        If indexLetter < numbers(value) Or value = letter Then GoTo ContinueLoop
 
         btn = value & number
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit For
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 playerTwo(buttons(btn)("piece"))("danger") = True
                 playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -270,16 +271,22 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
 
-        Goto ContinueLoop
-        ContinueLoop :
+        GoTo ContinueLoop
+ContinueLoop:
     Next value
-
+    
     ' Right
     For Each value In Array("A", "B", "C", "D", "E", "F", "G", "H")
         If indexLetter = 8 Then Exit For
         If numbers(value) > indexLetter Then
             btn = value & number
-            If buttons(btn)("isPiece") Then
+            If emulatePiece(1) = btn Then
+                availablePos.Add btn, True
+                valuesAdded = valuesAdded + 1
+                playerTwo(emulatePiece(0))("danger") = True
+                playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+                Exit For
+            ElseIf buttons(btn)("isPiece") Then
                 If buttons(btn)("player") = 2 Then
                     playerTwo(buttons(btn)("piece"))("danger") = True
                     playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -292,16 +299,17 @@ Public Function getPosLeftRightTopBottomP1(piece As String) As Variant
             valuesAdded = valuesAdded + 1
         End If
     Next value
-
+    
     If valuesAdded = 0 Then
-        getPosLeftRightTopBottomP1 = Empty
+        getPosRookP1 = Empty
     Else
-        getPosLeftRightTopBottomP1 = availablePos.keys
+        getPosRookP1 = availablePos.keys
     End If
 End Function
 
-Public Function getPosBishopP1(piece As String) As Variant
-
+Public Function getPosBishopP1(piece As String, Optional emulatePiece As Variant) As Variant
+    getPosBishopP1 = Empty
+    
     Dim letter As String
     Dim indexLetter As Integer
     Dim number As String
@@ -309,11 +317,13 @@ Public Function getPosBishopP1(piece As String) As Variant
     Dim availablePos As Object
     Set availablePos = CreateObject("Scripting.Dictionary")
     valuesAdded = 0
-
+    
+    If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+    
     letter = Mid(playerOne(piece)("newPos"), 1, 1)
     indexLetter = numbers(letter)
     number = Mid(playerOne(piece)("newPos"), 2, 1)
-
+    
     ' Top Left
     i = indexLetter
     j = CInt(number)
@@ -321,7 +331,13 @@ Public Function getPosBishopP1(piece As String) As Variant
         i = i - 1
         j = j + 1
         btn = letters(CStr(i)) & CStr(j)
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit Do
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 playerTwo(buttons(btn)("piece"))("danger") = True
                 playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -333,7 +349,7 @@ Public Function getPosBishopP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Top Right
     i = indexLetter
     j = CInt(number)
@@ -341,7 +357,13 @@ Public Function getPosBishopP1(piece As String) As Variant
         i = i + 1
         j = j + 1
         btn = letters(CStr(i)) & CStr(j)
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit Do
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 playerTwo(buttons(btn)("piece"))("danger") = True
                 playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -353,7 +375,7 @@ Public Function getPosBishopP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Bottom Left
     i = indexLetter
     j = CInt(number)
@@ -361,7 +383,13 @@ Public Function getPosBishopP1(piece As String) As Variant
         i = i - 1
         j = j - 1
         btn = letters(CStr(i)) & CStr(j)
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit Do
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 playerTwo(buttons(btn)("piece"))("danger") = True
                 playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -373,7 +401,7 @@ Public Function getPosBishopP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Bottom Right
     i = indexLetter
     j = CInt(number)
@@ -381,7 +409,13 @@ Public Function getPosBishopP1(piece As String) As Variant
         i = i + 1
         j = j - 1
         btn = letters(CStr(i)) & CStr(j)
-        If buttons(btn)("isPiece") Then
+        If emulatePiece(1) = btn Then
+            availablePos.Add btn, True
+            valuesAdded = valuesAdded + 1
+            playerTwo(emulatePiece(0))("danger") = True
+            playerTwo(emulatePiece(0))("piecesEater") = addToArr(playerTwo(emulatePiece(0))("piecesEater"), piece)
+            Exit Do
+        ElseIf buttons(btn)("isPiece") Then
             If buttons(btn)("player") = 2 Then
                 playerTwo(buttons(btn)("piece"))("danger") = True
                 playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
@@ -393,10 +427,8 @@ Public Function getPosBishopP1(piece As String) As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
-    If valuesAdded = 0 Then
-        getPosBishopP1 = Empty
-    Else
-        getPosBishopP1 = availablePos.keys
-    End If
+    
+    If valuesAdded = 0 Then Exit Function
+    
+    getPosBishopP1 = availablePos.keys
 End Function

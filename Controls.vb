@@ -10,9 +10,9 @@ End Sub
 
 Public Sub GenericClick(ByVal ctrl As MSForms.CommandButton)
     If activePiece = "" Then Exit Sub
-    
+
     If frm Is Nothing Then Init
-    
+
     If isPossibleMove(ctrl.name) Then
         movePiece ctrl.name, activePiece
         disablePiece activePiece
@@ -22,7 +22,7 @@ End Sub
 
 Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
     If Not boolPlaying Then Exit Sub
-
+    
     If frm Is Nothing Then Init
     Dim name As String
     Dim btn As String
@@ -32,10 +32,10 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
     name = ctrl.name
     number = Mid(name, 2, 1)
     values = getAvailablePosP1("E1King")
-    
-    
-    '? Make sure the player is not in check
 
+
+    '? Make sure the player is not in check
+    
     If activePiece <> "" Then
         If playerOneTurn And (number = "7" Or number = "8") Then
             btn = CStr(playerTwo(name)("newPos"))
@@ -51,7 +51,7 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
             End If
         End If
     End If
-
+    
     If playerOneTurn And (number = "1" Or number = "2") Then
         If activePiece <> "" Then disablePiece activePiece
         frm.Controls(name).BorderStyle = fmBorderStyleSingle
@@ -63,5 +63,5 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
         activePiece = name
         paintCases False
     End If
-    
+
 End Sub

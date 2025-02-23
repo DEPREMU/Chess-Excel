@@ -40,12 +40,24 @@ Public Function isPossibleMove(button As String) As Boolean
         If activePiece = "E1King" Then
             If isCheck(activePiece, button, True) Then Exit Function
         End If
+        If playerOne("E1King")("danger") Then
+            If Not breaksCheck(activePiece, button, True) Then Exit Function
+            isPossibleMove = True
+            Exit Function
+        End If
+        
         If ArrayContains(playerOne(activePiece)("nextPos"), button) Then isPossibleMove = True
     Else
         If IsEmpty(playerTwo(activePiece)("nextPos")) Then Exit Function
         If activePiece = "E8King" Then
             If isCheck(activePiece, button, False) Then Exit Function
         End If
+        If playerTwo("E8King")("danger") Then
+            If Not breaksCheck(activePiece, button, False) Then Exit Function
+            isPossibleMove = True
+            Exit Function
+        End If
+
         If ArrayContains(playerTwo(activePiece)("nextPos"), button) Then isPossibleMove = True
     End If
 End Function
@@ -191,4 +203,47 @@ Public Function movePiece(button As String, piece As String)
         playerTwo(activePiece)("moved") = True
         playerTwo(activePiece)("firstMove") = False
     End If
+End Function
+
+
+
+Public Function breaksCheck(piece As String, button As String, boolPlayerOne As Boolean) As Boolean
+    breaksCheck = False
+    If Not buttons(button)("isPiece") Then
+        If boolPlayerOne Then
+            If activePiece = "E1King" And Not isCheck(activePiece, button, True) Then
+                breaksCheck = True
+                Exit Function
+            End If
+            If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(piece, button)) Then
+                MsgBox "You are in check right now, you cannot move that piece"
+                Exit Function
+            End If
+            breaksCheck = True
+        Else
+            If activePiece = "E8King" And Not isCheck(activePiece, button, False) Then
+                breaksCheck = True
+                Exit Function
+            End If
+            If isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(piece, button)) Then
+                MsgBox "You are in check right now, you cannot move that piece"
+                Exit Function
+            End If
+            breaksCheck = True
+        End If
+        Exit Function
+
+    End If
+    
+
+    Dim piecesEater As Variant
+    Dim pieceToEat As Variant
+    If boolPlayerOne Then
+        piecesEater = deleteFromArr(playerOne(piece)("piecesEater"), buttons(button)("piece"))
+        If Not IsEmpty(piecesEater) Then Exit Function
+    Else
+        piecesEater = deleteFromArr(playerTwo(piece)("piecesEater"), buttons(button)("piece"))
+        If Not IsEmpty(piecesEater) Then Exit Function
+    End If
+    breaksCheck = True
 End Function

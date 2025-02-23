@@ -13,7 +13,7 @@ Private Sub ButtonStartGame_Click()
     If boolPlaying Or gameFinished Then Exit Sub
     handleButtons
     boolPlaying = True
-    Comments.Caption = "Player one turn"
+    LComments.Caption = "Player one turn"
     boolCheckPlayer1 = False
     boolCheckPlayer2 = False
     gameFinished = False
@@ -28,7 +28,7 @@ Private Sub ButtonRestartGame_Click()
     activePiece = ""
     rePosPieces
     initializeGame
-    Comments.Caption = "Game restarted"
+    LComments.Caption = "Game restarted"
     rePaintCases
 End Sub
 
