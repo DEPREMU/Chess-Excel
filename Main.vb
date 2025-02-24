@@ -33,19 +33,6 @@ Public Sub Delay(milliseconds As Single)
 End Sub
 
 
-Public Function promotePawn(piece As Variant, newPiece As Variant, boolPlayerOne As Boolean)
-    If frm Is Nothing Then Init
-    
-    If boolPlayerOne Then
-        frm.Controls(piece).Picture = LoadPicture(pathGame & newPiece & "Purple" & ".jpg")
-        playerOne(piece)("type") = newPiece
-    Else
-        frm.Controls(piece).Picture = LoadPicture(pathGame & newPiece & "White" & ".jpg")
-        playerTwo(piece)("type") = newPiece
-    End If
-End Function
-
-
 Public Function isPossibleMove(button As String) As Boolean
     Dim i As Integer
     Dim value As Variant
@@ -73,15 +60,15 @@ End Function
 
 Public Sub disablePiece(piece As String)
     If frm Is Nothing Then Init
-
+    
     Dim value As Variant
     Dim value2 As Variant
     Dim newPosPiece As String
     Dim newPos As Object
-
+    
     Set newPos = CreateObject("Scripting.Dictionary")
     frm.Controls(piece).BorderStyle = fmBorderStyleNone
-
+    
     rePaintCases
     If playerOneTurn Then
         If Not playerOne(piece)("moved") Then Exit Sub
@@ -98,14 +85,14 @@ Public Sub disablePiece(piece As String)
     activePiece = ""
     playerOneTurn = Not playerOneTurn
     checkGameStatus(piece)
-
-
+    
+    
 End Sub
 
 
 Public Function updateMoves(piece As String, boolPlayerOne As Boolean) As Variant
     Dim availablePos As Variant
-
+    
     If boolPlayerOne Then
         availablePos = getAvailablePosP1(piece)
         playerOne(piece)("nextPos") = availablePos
@@ -113,7 +100,7 @@ Public Function updateMoves(piece As String, boolPlayerOne As Boolean) As Varian
         availablePos = getAvailablePosP2(piece)
         playerTwo(piece)("nextPos") = availablePos
     End If
-
+    
     updateMoves = availablePos
 End Function
 
@@ -123,9 +110,9 @@ Public Sub paintCases(boolPlayerOne As Boolean)
     Dim availablePos As Variant
     Dim posPiece As Variant
     rePaintCases
-
+    
     If frm Is Nothing Then Init
-
+    
     If boolPlayerOne Then
         availablePos = updateMoves(activePiece, True)
         If IsEmpty(availablePos) Then Exit Sub
@@ -139,7 +126,7 @@ Public Sub paintCases(boolPlayerOne As Boolean)
             frm.Controls(pos).BackColor = colors("caseSelected")
         Next pos
     End If
-    
+
     If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True) Then
         For Each value In playerOne("E1King")("piecesEater")
             posPiece = playerTwo(value)("newPos")
@@ -162,14 +149,16 @@ Public Sub paintCases(boolPlayerOne As Boolean)
         frm.Controls(playerTwo("E8King")("newPos")).BackColor = colors("danger")
     End If
 
+
 End Sub
 
 Public Function movePiece(button As String, piece As String)
     If frm Is Nothing Then Init
     Dim posBefore As String
     Dim pieceEaten As String
-    
+
     If playerOneTurn Then
+        If playerOne(piece)("type") = "Pawn" And Mid(button, 2, 1) = "8" Then PromotePawn.Show
         If piece = "E1King" Then
             If button = "G1" Then movePiece "F1", "H1Rook"
             If button = "C1" Then movePiece "D1", "A1Rook"
@@ -199,6 +188,7 @@ Public Function movePiece(button As String, piece As String)
         playerOne(piece)("moved") = True
         playerOne(piece)("firstMove") = False
     Else
+        If playerTwo(piece)("type") = "Pawn" And Mid(button, 2, 1) = "8" Then PromotePawn.Show
         If piece = "E8King" Then
             If button = "G8" Then movePiece "F8", "H8Rook"
             If button = "C8" Then movePiece "D8", "A8Rook"
@@ -257,10 +247,10 @@ Public Function breaksCheck(piece As String, button As String, boolPlayerOne As 
             breaksCheck = True
         End If
         Exit Function
-
+        
     End If
-    
 
+    
     Dim piecesEater As Variant
     Dim pieceToEat As Variant
     If boolPlayerOne Then

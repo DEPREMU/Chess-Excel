@@ -36,7 +36,9 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
                 btn = letter & CStr(CInt(number) + 1)
                 If Not buttons(btn)("isPiece") Then
                     availablePos.Add btn, True
-                    If playerOne(piece)("firstMove") And Not buttons(letter & CStr(CInt(number) + 2))("isPiece") Then availablePos.Add letter & CStr(CInt(number) + 2), True
+                    If playerOne(piece)("firstMove") Then
+                        If Not buttons(letter & CStr(CInt(number) + 2))("isPiece") Then availablePos.Add letter & CStr(CInt(number) + 2), True
+                    End If
                 End If
             End If
 
