@@ -42,14 +42,9 @@ Public Function initializeGame()
     boolPlaying = False
     gameFinished = False
     playerOneTurn = True
-    
-    Dim isPiece As Object, posButton As Object, buttonCompleted As Object
-    Dim piece1 As String, piece2 As String, buttonLocal As String
-    Dim typePiece As String, possibleNextPositionP1_1 As Object
-    Dim possibleNextPositionP1_2 As Object, possibleNextPositionP2_1 As Object
-    Dim possibleNextPositionP2_2 As Object, ctrl As control, piece3 As String
-    Dim piece4 As String
-    Dim i As Integer
+    pathGame = "C:\Users\zae47\OneDrive\Documentos\ArchivosParaLaUniBIS\Tareas\Tetra4\AppsDesign\Ajedrez\Chess-Excel\"
+    piecesEatenP1 = 0
+    piecesEatenP2 = 0
     
     Set playerOne = CreateObject("Scripting.Dictionary")
     Set playerTwo = CreateObject("Scripting.Dictionary")
@@ -57,8 +52,16 @@ Public Function initializeGame()
     Set letters = CreateObject("Scripting.Dictionary")
     Set numbers = CreateObject("Scripting.Dictionary")
     
-    piecesEatenP1 = 0
-    piecesEatenP2 = 0
+    Dim isPiece As Object, posButton As Object, buttonCompleted As Object
+    Dim piece1 As String, piece2 As String, buttonLocal As String
+    Dim typePiece As String, possibleNextPositionP1_1 As Object
+    Dim possibleNextPositionP1_2 As Object, possibleNextPositionP2_1 As Object
+    Dim possibleNextPositionP2_2 As Object, ctrl As control, piece3 As String
+    Dim piece4 As String
+    Dim letter As Variant
+    Dim i As Integer
+    
+    
     i = 1
     For Each value In Array("A", "B", "C", "D", "E", "F", "G", "H")
         numbers.Add value, i
@@ -68,7 +71,6 @@ Public Function initializeGame()
 
     
     ' Make buttons info -------------------------------------------------------
-    Dim letter As Variant
     For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
         For i = 1 To 8
             buttonLocal = letter & CStr(i)
@@ -87,7 +89,7 @@ Public Function initializeGame()
             bool1 = (letter = "A" Or letter = "C" Or letter = "E" Or letter = "G") And (i = 1 Or i = 3 Or i = 5 Or i = 7)
             bool2 = (letter = "B" Or letter = "D" Or letter = "F" Or letter = "H") And (i = 2 Or i = 4 Or i = 6 Or i = 8)
             If bool1 Or bool2 Then
-                buttonCompleted("bgcolor") = &H0 &
+                buttonCompleted("bgcolor") = &H0 
             End If
             buttons.Add buttonLocal, buttonCompleted
             Controls(buttonLocal).Enabled = False
@@ -319,6 +321,7 @@ Public Function initializeGame()
     
     playerOne.Add piece1 & "King", chessPiece1
     playerTwo.Add piece2 & "King", chessPiece2
+    
     
     ' Make controls dinamically -----------------------------------------------
     i = 0

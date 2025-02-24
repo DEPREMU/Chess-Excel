@@ -10,7 +10,8 @@ Public letters As Object
 Public numbers As Object
 Public piecesEatenP1 As Integer
 Public piecesEatenP2 As Integer
-
+Public pathGame As String
+Public colors As Object
 
 
 Dim frm As UserForm
@@ -31,6 +32,20 @@ Public Sub Delay(milliseconds As Single)
     Loop
 End Sub
 
+
+Public Function promotePawn(piece As Variant, newPiece As Variant, boolPlayerOne As Boolean)
+    If frm Is Nothing Then Init
+    
+    If boolPlayerOne Then
+        frm.Controls(piece).Picture = LoadPicture(pathGame & newPiece & "Purple" & ".jpg")
+        playerOne(piece)("type") = newPiece
+    Else
+        frm.Controls(piece).Picture = LoadPicture(pathGame & newPiece & "White" & ".jpg")
+        playerTwo(piece)("type") = newPiece
+    End If
+End Function
+
+
 Public Function isPossibleMove(button As String) As Boolean
     Dim i As Integer
     Dim value As Variant
@@ -42,10 +57,7 @@ Public Function isPossibleMove(button As String) As Boolean
         End If
         If playerOne("E1King")("danger") Then
             If Not breaksCheck(activePiece, button, True) Then Exit Function
-            isPossibleMove = True
-            Exit Function
         End If
-        
         If ArrayContains(playerOne(activePiece)("nextPos"), button) Then isPossibleMove = True
     Else
         If IsEmpty(playerTwo(activePiece)("nextPos")) Then Exit Function
@@ -54,10 +66,7 @@ Public Function isPossibleMove(button As String) As Boolean
         End If
         If playerTwo("E8King")("danger") Then
             If Not breaksCheck(activePiece, button, False) Then Exit Function
-            isPossibleMove = True
-            Exit Function
         End If
-
         If ArrayContains(playerTwo(activePiece)("nextPos"), button) Then isPossibleMove = True
     End If
 End Function
@@ -112,6 +121,8 @@ End Function
 Public Sub paintCases(boolPlayerOne As Boolean)
     Dim pos As Variant
     Dim availablePos As Variant
+    Dim posPiece As Variant
+    rePaintCases
 
     If frm Is Nothing Then Init
 
@@ -119,24 +130,38 @@ Public Sub paintCases(boolPlayerOne As Boolean)
         availablePos = updateMoves(activePiece, True)
         If IsEmpty(availablePos) Then Exit Sub
         For Each pos In availablePos
-            If activePiece = "E1King" And isCheck(activePiece, CStr(pos), True) Then
-                frm.Controls(pos).BackColor = &H80 &
-            Else
-                frm.Controls(pos).BackColor = &H80FFFF
-            End If
+            frm.Controls(pos).BackColor = colors("caseSelected")
         Next pos
     Else
         availablePos = updateMoves(activePiece, False)
         If IsEmpty(availablePos) Then Exit Sub
         For Each pos In availablePos
-            If activePiece = "E8King" And isCheck(activePiece, CStr(pos), False) Then
-                frm.Controls(pos).BackColor = &H80 &
-            Else
-                frm.Controls(pos).BackColor = &H80FFFF
-            End If
+            frm.Controls(pos).BackColor = colors("caseSelected")
         Next pos
     End If
     
+    If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True) Then
+        For Each value In playerOne("E1King")("piecesEater")
+            posPiece = playerTwo(value)("newPos")
+            If frm.Controls(posPiece) <> buttons(posPiece)("bgcolor") Then
+                frm.Controls(posPiece).BackColor = colors("pieceEaterAndCaseSelected")
+            Else
+                frm.Controls(posPiece).BackColor = colors("pieceEater")
+            End If
+        Next value
+        frm.Controls(playerOne("E1King")("newPos")).BackColor = colors("danger")
+    ElseIf isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False) Then
+        For Each value In playerTwo("E8King")("piecesEater")
+            posPiece = playerOne(value)("newPos")
+            If frm.Controls(posPiece) <> buttons(posPiece)("bgcolor") Then
+                frm.Controls(posPiece).BackColor = colors("pieceEaterAndCaseSelected")
+            Else
+                frm.Controls(posPiece).BackColor = colors("pieceEater")
+            End If
+        Next value
+        frm.Controls(playerTwo("E8King")("newPos")).BackColor = colors("danger")
+    End If
+
 End Sub
 
 Public Function movePiece(button As String, piece As String)

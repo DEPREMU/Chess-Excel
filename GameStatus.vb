@@ -20,13 +20,13 @@ Public Function checkGameStatus(piece As String)
     If isCheckMate("E1King", True) Then
         MsgBox "Player two wins"
         frm.LComments.Caption = "W Player Two"
-        frm.Controls(playerOne("E1King")("newPos")).BackColor = &H80 &
+        frm.Controls(playerOne("E1King")("newPos")).BackColor = colors("danger")
         finishGame
         Exit Function
     ElseIf isCheckMate("E8King", False) Then
         MsgBox "Player one wins"
         frm.LComments.Caption = "W Player One"
-        frm.Controls(playerTwo("E8King")("newPos")).BackColor = &H80 &
+        frm.Controls(playerTwo("E8King")("newPos")).BackColor = colors("danger")
         finishGame
         Exit Function
     End If
@@ -34,19 +34,19 @@ Public Function checkGameStatus(piece As String)
     If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True) Then
         frm.LComments.Caption = "Check Player One"
         For Each localPiece In playerOne("E1King")("piecesEater")
-            frm.Controls(playerTwo(localPiece)("newPos")).BackColor = &HFFFF80
+            frm.Controls(playerTwo(localPiece)("newPos")).BackColor = colors("pieceEater")
         Next localPiece
-        frm.Controls(playerOne("E1King")("newPos")).BackColor = &H80 &
+        frm.Controls(playerOne("E1King")("newPos")).BackColor = colors("danger")
         boolCheckPlayer1 = True
     ElseIf isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False) Then
         For Each localPiece In playerTwo("E8King")("piecesEater")
-            frm.Controls(playerOne(localPiece)("newPos")).BackColor = &HFFFF80
+            frm.Controls(playerOne(localPiece)("newPos")).BackColor = colors("pieceEater")
         Next localPiece
         frm.LComments.Caption = "Check Player Two"
-        frm.Controls(playerTwo("E8King")("newPos")).BackColor = &H80 &
+        frm.Controls(playerTwo("E8King")("newPos")).BackColor = colors("danger")
         boolCheckPlayer2 = True
     Else
-        If Not playerOneTurn Then
+        If playerOneTurn Then
             frm.LComments.Caption = "Player One Turn"
             boolCheckPlayer1 = False
             rePaintCases

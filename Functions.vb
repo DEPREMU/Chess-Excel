@@ -138,5 +138,3 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
     End If
     addToArr = newArr.items
 End Function
-
-
