@@ -81,7 +81,7 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
             indexLetter = numbers(letter)
             number = CInt(Mid(position, 2, 1))
             
-            offsets = Array(Array(2, - 1), Array(2, 1), Array( - 2, - 1), Array( - 2, 1), Array(1, - 2), Array(1, 2), Array( - 1, - 2), Array( - 1, 2))
+            offsets = Array(Array(2, -1), Array(2, 1), Array(-2, -1), Array(-2, 1), Array(1, -2), Array(1, 2), Array(-1, -2), Array(-1, 2))
             
             For i = LBound(offsets) To UBound(offsets)
                 newNum = number + offsets(i)(0)
@@ -165,7 +165,7 @@ Public Function posiblePosKingP2(piece As String, position As String) As Variant
     number = Mid(playerTwo(piece)("newPos"), 2, 1)
     
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
+    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
     
     For i = LBound(directions) To UBound(directions)
         
@@ -174,7 +174,7 @@ Public Function posiblePosKingP2(piece As String, position As String) As Variant
         
         If newLetterIndex >= 1 And newLetterIndex <= 8 And newNumber >= 1 And newNumber <= 8 Then
             btn = letters(CStr(newLetterIndex)) & CStr(newNumber)
-            If Not buttons(btn)("isPiece") Or buttons(btn)("player") = 1 Then
+            If Not buttons(btn)("isPiece") Or buttons(btn)("player") = 1 And btn <> playerTwo(piece)("newPos") Then
                 availablePos.Add btn, True
                 valuesAdded = valuesAdded + 1
             End If
@@ -183,13 +183,13 @@ Public Function posiblePosKingP2(piece As String, position As String) As Variant
     
     If playerTwo(piece)("firstMove") Then
         ' Enroque corto
-        If Not buttons("F8")("isPiece") And Not buttons("G8")("isPiece") And playerTwo("H8Rook")("firstMove") Then
+        If Not buttons("F8")("isPiece") And Not buttons("G8")("isPiece") And playerTwo("H8Rook")("firstMove") And Not playerTwo("H8Rook")("dead") Then
             availablePos.Add "G8", True
             valuesAdded = valuesAdded + 1
         End If
         
         ' Enroque largo
-        If Not buttons("B8")("isPiece") And Not buttons("C8")("isPiece") And Not buttons("D8")("isPiece") And playerTwo("A8Rook")("firstMove") Then
+        If Not buttons("B8")("isPiece") And Not buttons("C8")("isPiece") And Not buttons("D8")("isPiece") And playerTwo("A8Rook")("firstMove") And Not playerTwo("A8Rook")("dead") Then
             availablePos.Add "C8", True
             valuesAdded = valuesAdded + 1
         End If
@@ -212,17 +212,24 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     Dim availablePos As Object
     Dim value As Variant
     Dim valuesAdded As Integer
+    Dim lastIsPieceBtns As Boolean
+    Dim lastPos As Variant
+    Dim lastPlayer As Integer
+    Dim lastPiece As Variant
+    lastIsPiece As Boolean
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
-        lastPos = playerone(emulatePiece(0))("newPos")
-        lastPlayer = buttons(playerone(emulatePiece(0))("newPos"))("player")
-        lastPiece = buttons(playerone(emulatePiece(0))("newPos"))("piece")
-        lastIsPiece = buttons(playerone(emulatePiece(0))("newPos"))("isPiece")
-        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = False
-        buttons(playerone(emulatePiece(0))("newPos"))("player") = 0
-        playerone(emulatePiece(0))("newPos") = emulatePiece(1)
+        lastPos = playerOne(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerOne(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerOne(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerOne(emulatePiece(0))("newPos"))("isPiece")
+        lastIsPieceBtns = buttons(emulatePiece(1))("isPiece")
+        
+        buttons(playerOne(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerOne(emulatePiece(0))("newPos"))("player") = 0
+        playerOne(emulatePiece(0))("newPos") = emulatePiece(1)
         buttons(emulatePiece(1))("isPiece") = True
     End If
     
@@ -255,7 +262,7 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     Next i
     
     ' Bottom
-    For Each value In range(CInt(number), 0, - 1)
+    For Each value In range(CInt(number), 0, -1)
         If number <> value And value Then
             btn = letter & CStr(value)
             If emulatePiece(1) = btn Then
@@ -281,7 +288,7 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     ' Left
     For Each value In Array("H", "G", "F", "E", "D", "C", "B", "A")
         If indexLetter = 1 Then Exit For
-        If indexLetter < numbers(value) Or value = letter Then Goto ContinueLoop
+        If indexLetter < numbers(value) Or value = letter Then GoTo ContinueLoop
         
         btn = value & number
         If emulatePiece(1) = btn Then
@@ -302,8 +309,8 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
         
-        Goto ContinueLoop
-        ContinueLoop :
+        GoTo ContinueLoop
+ContinueLoop:
     Next value
     
     ' Right
@@ -332,11 +339,11 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     Next value
     
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
-        playerone(emulatePiece(0))("newPos") = lastPos
-        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
-        buttons(playerone(emulatePiece(0))("newPos"))("player") = lastPlayer
-        buttons(playerone(emulatePiece(0))("newPos"))("piece") = lastPiece
-        buttons(emulatePiece(1))("isPiece") = False
+        playerOne(emulatePiece(0))("newPos") = lastPos
+        buttons(playerOne(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerOne(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerOne(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = lastIsPieceBtns
     End If
     
     If valuesAdded = 0 Then
@@ -356,17 +363,24 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
     Dim availablePos As Object
     Dim value As Variant
     Dim valuesAdded As Integer
+    Dim lastIsPieceBtns As Boolean
+    Dim lastPos As Variant
+    Dim lastPlayer As Integer
+    Dim lastPiece As Variant
+    lastIsPiece As Boolean
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
-        lastPos = playerone(emulatePiece(0))("newPos")
-        lastPlayer = buttons(playerone(emulatePiece(0))("newPos"))("player")
-        lastPiece = buttons(playerone(emulatePiece(0))("newPos"))("piece")
-        lastIsPiece = buttons(playerone(emulatePiece(0))("newPos"))("isPiece")
-        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = False
-        buttons(playerone(emulatePiece(0))("newPos"))("player") = 0
-        playerone(emulatePiece(0))("newPos") = emulatePiece(1)
+        lastPos = playerOne(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerOne(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerOne(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerOne(emulatePiece(0))("newPos"))("isPiece")
+        lastIsPieceBtns = buttons(emulatePiece(1))("isPiece")
+        
+        buttons(playerOne(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerOne(emulatePiece(0))("newPos"))("player") = 0
+        playerOne(emulatePiece(0))("newPos") = emulatePiece(1)
         buttons(emulatePiece(1))("isPiece") = True
     End If
     
@@ -481,11 +495,11 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
     Loop
 
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
-        playerone(emulatePiece(0))("newPos") = lastPos
-        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
-        buttons(playerone(emulatePiece(0))("newPos"))("player") = lastPlayer
-        buttons(playerone(emulatePiece(0))("newPos"))("piece") = lastPiece
-        buttons(emulatePiece(1))("isPiece") = False
+        playerOne(emulatePiece(0))("newPos") = lastPos
+        buttons(playerOne(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerOne(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerOne(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = lastIsPieceBtns
     End If
     
     If valuesAdded = 0 Then

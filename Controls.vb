@@ -42,12 +42,14 @@ Public Sub GenericClickLabel(ByVal ctrl As MSForms.label)
             If isPossibleMove(btn) Then
                 movePiece btn, activePiece
                 disablePiece activePiece
+                Exit Sub
             End If
         ElseIf Not playerOneTurn And (number = "1" Or number = "2") Then
             btn = CStr(playerOne(name)("newPos"))
             If isPossibleMove(btn) Then
                 movePiece btn, activePiece
                 disablePiece activePiece
+                Exit Sub
             End If
         End If
     End If

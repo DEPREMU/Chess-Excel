@@ -34,6 +34,10 @@ Private Sub ButtonRestartGame_Click()
     rePaintCases
 End Sub
 
+Private Sub LBlackCaseText_Click()
+    
+End Sub
+
 Private Sub UserForm_Initialize()
     initializeGame
 End Sub
@@ -66,7 +70,7 @@ Public Function initializeGame()
 
     colors.Add "danger", &H33FF
     colors.Add "caseSelected", &HFFD700
-    colors.Add "pieceEaterAndCaseSelected", &H80FF&
+    colors.Add "pieceEaterAndCaseSelected", &H80FF &
     colors.Add "pieceEater", &HFF6347
     colors.Add "BlackCase", RGB(125, 135, 150)
     colors.Add "WhiteCase", RGB(240, 217, 181)
@@ -351,6 +355,10 @@ Public Function initializeGame()
             i = i + 1
         End If
     Next ctrl
+
+    For Each value In colors.keys
+        Controls("L" & CStr(value)).BackColor = colors(value)
+    Next value
 
 
     rePaintCases

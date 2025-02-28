@@ -38,7 +38,8 @@ Public Function isPossibleMove(button As String) As Boolean
     Dim i As Integer
     Dim value As Variant
     isPossibleMove = False
-    Dim containsPos As Variant
+    Dim containsPos As Boolean
+    Dim isPosibleEat As Boolean
     If playerOneTurn Then
         If IsEmpty(playerOne(activePiece)("nextPos")) Then Exit Function
         If activePiece = "E1King" Then
@@ -50,12 +51,12 @@ Public Function isPossibleMove(button As String) As Boolean
         containsPos = ArrayContains(playerOne(activePiece)("nextPos"), button)
         If Not containsPos Then Exit Function
         If activePiece <> "E1King" Then
-            If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(activePiece, button)) Then
+            isPosibleEat = ArrayContains(playerOne(activePiece)("nextPos"), button)
+            If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(activePiece, button)) And Not isPosibleEat Then
                 MsgBox "You cannot move there, you will be in check"
                 Exit Function
             End If
         End If
-        isPossibleMove = True
     Else
         If IsEmpty(playerTwo(activePiece)("nextPos")) Then Exit Function
         If activePiece = "E8King" Then
@@ -67,13 +68,14 @@ Public Function isPossibleMove(button As String) As Boolean
         containsPos = ArrayContains(playerTwo(activePiece)("nextPos"), button)
         If Not containsPos Then Exit Function
         If activePiece <> "E8King" Then
-            If isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(activePiece, button)) Then
+            isPosibleEat = ArrayContains(playerTwo(activePiece)("nextPos"), button)
+            If isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(activePiece, button)) And Not isPosibleEat Then
                 MsgBox "You cannot move there, you will be in check"
                 Exit Function
             End If
         End If
-        isPossibleMove = True
     End If
+    isPossibleMove = True
 End Function
 
 Public Sub disablePiece(piece As String)
@@ -99,12 +101,10 @@ Public Sub disablePiece(piece As String)
         playerTwo(piece)("moved") = False
         '! swapLabels
     End If
+    checkGameStatus(piece)
     pieceActived = activePiece
     activePiece = ""
     playerOneTurn = Not playerOneTurn
-    checkGameStatus(piece)
-
-
 End Sub
 
 
@@ -209,11 +209,12 @@ Public Function movePiece(button As String, piece As String)
         If buttons(button)("player") = 2 Then
             pieceEaten = buttons(button)("piece")
             playerTwo(pieceEaten)("dead") = True
-            If piecesEatenP1 > 5 Then
-                frm.Controls(pieceEaten).Left = 400 + ((piecesEatenP1 - 6) * 25)
+            playerTwo(pieceEaten)("newPos") = ""
+            If piecesEatenP1 > 7 Then
+                frm.Controls(pieceEaten).Left = 390 + ((piecesEatenP1 - 8) * 20)
                 frm.Controls(pieceEaten).Top = 287 + 40
             Else
-                frm.Controls(pieceEaten).Left = 400 + (piecesEatenP1 * 25)
+                frm.Controls(pieceEaten).Left = 390 + (piecesEatenP1 * 20)
                 frm.Controls(pieceEaten).Top = 287
             End If
             piecesEatenP1 = piecesEatenP1 + 1
@@ -240,11 +241,11 @@ Public Function movePiece(button As String, piece As String)
         If buttons(button)("player") = 1 Then
             pieceEaten = buttons(button)("piece")
             playerOne(pieceEaten)("dead") = True
-            If piecesEatenP2 > 5 Then
-                frm.Controls(pieceEaten).Left = 400 + ((piecesEatenP2 - 6) * 25)
-                frm.Controls(pieceEaten).Top = 77 + 40
+            If piecesEatenP2 > 7 Then
+                frm.Controls(pieceEaten).Left = 390 + ((piecesEatenP2 - 8) * 20)
+                frm.Controls(pieceEaten).Top = 37
             Else
-                frm.Controls(pieceEaten).Left = 400 + (piecesEatenP2 * 25)
+                frm.Controls(pieceEaten).Left = 390 + (piecesEatenP2 * 20)
                 frm.Controls(pieceEaten).Top = 77
             End If
             piecesEatenP2 = piecesEatenP2 + 1
@@ -266,12 +267,14 @@ End Function
 
 Public Function breaksCheck(piece As String, button As String, boolPlayerOne As Boolean) As Boolean
     breaksCheck = False
-    If Not buttons(button)("isPiece") Then
+    If buttons(button)("piece") = "" Then
+        If piece = "H7Pawn" Then MsgBox buttons(button)("piece") & buttons(button)("isPiece")
         If boolPlayerOne Then
             If activePiece = "E1King" And Not isCheck(activePiece, button, True) Then
                 breaksCheck = True
                 Exit Function
             End If
+            If Not ArrayContains(playerOne(piece)("nextPos"), button) Then Exit Function
             If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(piece, button)) Then
                 MsgBox "You are in check right now, you cannot move that piece"
                 Exit Function
@@ -282,6 +285,7 @@ Public Function breaksCheck(piece As String, button As String, boolPlayerOne As 
                 breaksCheck = True
                 Exit Function
             End If
+            If Not ArrayContains(playerTwo(piece)("nextPos"), button) Then Exit Function
             If isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(piece, button)) Then
                 MsgBox "You are in check right now, you cannot move that piece"
                 Exit Function
