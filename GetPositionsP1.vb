@@ -46,9 +46,14 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
             If indexLetter > 1 And CInt(number) < 8 Then
                 btn = letters(CStr(indexLetter - 1)) & CStr(CInt(number) + 1)
                 If buttons(btn)("player") = 2 Then
-                    availablePos.Add btn, True
-                    playerTwo(buttons(btn)("piece"))("danger") = True
-                    playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
+                    If playerTwo(buttons(btn)("piece"))("enPassant") Then
+                        btn = Mid(buttons(btn)("piece"), 1, 1) & CStr(CInt(Mid(buttons(btn)("piece"), 2, 1)) - 1)
+                        If Not buttons(btn)("isPiece") Then availablePos.Add btn, True
+                    Else
+                        availablePos.Add btn, True
+                        playerTwo(buttons(btn)("piece"))("danger") = True
+                        playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
+                    End If
                 End If
             End If
             
@@ -56,9 +61,14 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
             If indexLetter < 8 And CInt(number) < 8 Then
                 btn = letters(CStr(indexLetter + 1)) & CStr(CInt(number) + 1)
                 If buttons(btn)("player") = 2 Then
-                    playerTwo(buttons(btn)("piece"))("danger") = True
-                    playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
-                    availablePos.Add btn, True
+                    If playerTwo(buttons(btn)("piece"))("enPassant") Then
+                        btn = Mid(buttons(btn)("piece"), 1, 1) & CStr(CInt(Mid(buttons(btn)("piece"), 2, 1)) - 1)
+                        If Not buttons(btn)("isPiece") Then availablePos.Add btn, True
+                    Else
+                        playerTwo(buttons(btn)("piece"))("danger") = True
+                        playerTwo(buttons(btn)("piece"))("piecesEater") = addToArr(playerTwo(buttons(btn)("piece"))("piecesEater"), piece)
+                        availablePos.Add btn, True
+                    End If
                 End If
             End If
             
@@ -77,7 +87,7 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
             indexLetter = numbers(letter)
             number = CInt(Mid(position, 2, 1))
             
-            offsets = Array(Array(2, - 1), Array(2, 1), Array( - 2, - 1), Array( - 2, 1), Array(1, - 2), Array(1, 2), Array( - 1, - 2), Array( - 1, 2))
+            offsets = Array(Array(2, -1), Array(2, 1), Array(-2, -1), Array(-2, 1), Array(1, -2), Array(1, 2), Array(-1, -2), Array(-1, 2))
             
             For i = LBound(offsets) To UBound(offsets)
                 newNum = number + offsets(i)(0)
@@ -151,7 +161,7 @@ Public Function getPosKingP1(piece As String, position As String) As Variant
     valuesAdded = 0
     
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
+    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
     
     For i = LBound(directions) To UBound(directions)
         
@@ -242,7 +252,7 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
     Next i
 
     ' Bottom
-    For Each value In range(CInt(number), 0, - 1)
+    For Each value In range(CInt(number), 0, -1)
         If number <> value And value Then
             btn = letter & CStr(value)
             If emulatePiece(1) = btn Then
@@ -268,7 +278,7 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
     ' Left
     For Each value In Array("H", "G", "F", "E", "D", "C", "B", "A")
         If indexLetter = 1 Then Exit For
-        If indexLetter < numbers(value) Or value = letter Then Goto ContinueLoop
+        If indexLetter < numbers(value) Or value = letter Then GoTo ContinueLoop
         
         btn = value & number
         If emulatePiece(1) = btn Then
@@ -289,8 +299,8 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
         
-        Goto ContinueLoop
-        ContinueLoop :
+        GoTo ContinueLoop
+ContinueLoop:
     Next value
 
     ' Right

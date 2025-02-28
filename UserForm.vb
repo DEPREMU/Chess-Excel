@@ -34,10 +34,6 @@ Private Sub ButtonRestartGame_Click()
     rePaintCases
 End Sub
 
-Private Sub LBlackCaseText_Click()
-    
-End Sub
-
 Private Sub UserForm_Initialize()
     initializeGame
 End Sub
@@ -101,6 +97,7 @@ Public Function initializeGame()
             buttonCompleted.Add "bgcolor", colors("WhiteCase")
             buttonCompleted.Add "player", 0
             buttonCompleted.Add "name", buttonLocal
+            buttonCompleted.Add "enPassant", ""
 
             Dim bool1 As Boolean, bool2 As Boolean
             bool1 = (letter = "A" Or letter = "C" Or letter = "E" Or letter = "G") And (i = 1 Or i = 3 Or i = 5 Or i = 7)
@@ -154,6 +151,8 @@ Public Function initializeGame()
         chessPiece2.Add "piecesEater", Empty
         chessPiece1.Add "dead", False
         chessPiece2.Add "dead", False
+        chessPiece1.Add "enPassant", False
+        chessPiece2.Add "enPassant", False
 
         playerOne.Add piece1 & "Pawn", chessPiece1
         playerTwo.Add piece2 & "Pawn", chessPiece2

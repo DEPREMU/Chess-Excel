@@ -49,6 +49,10 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
                     availablePos.Add btn, True
                     playerOne(buttons(btn)("piece"))("danger") = True
                     playerOne(buttons(btn)("piece"))("piecesEater") = addToArr(playerOne(buttons(btn)("piece"))("piecesEater"), piece)
+                     If playerOne(buttons(btn)("piece"))("enPassant") Then
+                        btn = Mid(buttons(btn)("piece"), 1, 1) & CStr(CInt(Mid(buttons(btn)("piece"), 2, 1)) + 1)
+                        If Not buttons(btn)("isPiece") Then availablePos.Add btn, True
+                    End If
                 End If
             End If
             
@@ -59,6 +63,10 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
                     playerOne(buttons(btn)("piece"))("danger") = True
                     playerOne(buttons(btn)("piece"))("piecesEater") = addToArr(playerOne(buttons(btn)("piece"))("piecesEater"), piece)
                     availablePos.Add btn, True
+                     If playerOne(buttons(btn)("piece"))("enPassant") Then
+                        btn = Mid(buttons(btn)("piece"), 1, 1) & CStr(CInt(Mid(buttons(btn)("piece"), 2, 1)) + 1)
+                        If Not buttons(btn)("isPiece") Then availablePos.Add btn, True
+                    End If
                 End If
             End If
             
@@ -216,7 +224,7 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     Dim lastPos As Variant
     Dim lastPlayer As Integer
     Dim lastPiece As Variant
-    lastIsPiece As Boolean
+    Dim lastIsPiece As Boolean
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
@@ -367,7 +375,7 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
     Dim lastPos As Variant
     Dim lastPlayer As Integer
     Dim lastPiece As Variant
-    lastIsPiece As Boolean
+    Dim lastIsPiece As Boolean
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
@@ -508,3 +516,4 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
         getAvailablePosBishopP2 = availablePos.keys
     End If
 End Function
+

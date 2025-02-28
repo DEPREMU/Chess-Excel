@@ -80,15 +80,15 @@ End Function
 
 Public Sub disablePiece(piece As String)
     If frm Is Nothing Then Init
-
+    
     Dim value As Variant
     Dim value2 As Variant
     Dim newPosPiece As String
     Dim newPos As Object
-
+    
     Set newPos = CreateObject("Scripting.Dictionary")
     frm.Controls(piece).BorderStyle = fmBorderStyleNone
-
+    
     rePaintCases
     If playerOneTurn Then
         If Not playerOne(piece)("moved") Then Exit Sub
@@ -101,7 +101,7 @@ Public Sub disablePiece(piece As String)
         playerTwo(piece)("moved") = False
         '! swapLabels
     End If
-    checkGameStatus(piece)
+    checkGameStatus (piece)
     pieceActived = activePiece
     activePiece = ""
     playerOneTurn = Not playerOneTurn
@@ -110,7 +110,7 @@ End Sub
 
 Public Function updateMoves(piece As String, boolPlayerOne As Boolean) As Variant
     Dim availablePos As Variant
-
+    
     If boolPlayerOne Then
         availablePos = getAvailablePosP1(piece)
         playerOne(piece)("nextPos") = availablePos
@@ -118,7 +118,7 @@ Public Function updateMoves(piece As String, boolPlayerOne As Boolean) As Varian
         availablePos = getAvailablePosP2(piece)
         playerTwo(piece)("nextPos") = availablePos
     End If
-
+    
     updateMoves = availablePos
 End Function
 
@@ -132,15 +132,15 @@ Public Sub paintCases(boolPlayerOne As Boolean)
     kingP1 = "E1King"
     kingP2 = "E8King"
     rePaintCases
-
+    
     If frm Is Nothing Then Init
-
+    
     If Not IsEmpty(lastMovement) Then
         For Each value In lastMovement
             frm.Controls(value).BackColor = colors("lastMovement")
         Next value
     End If
-
+    
     If boolPlayerOne Then
         availablePos = updateMoves(activePiece, True)
         If IsEmpty(availablePos) Then Exit Sub
@@ -154,7 +154,7 @@ Public Sub paintCases(boolPlayerOne As Boolean)
             frm.Controls(pos).BackColor = colors("caseSelected")
         Next pos
     End If
-    
+
     If isCheck(kingP1, CStr(playerOne(kingP1)("newPos")), True) Then
         For Each value In playerOne(kingP1)("piecesEater")
             posPiece = playerTwo(value)("newPos")
@@ -188,33 +188,62 @@ Public Sub paintCases(boolPlayerOne As Boolean)
             End If
         Next value
     End If
-    
-    
+
+
 End Sub
 
 Public Function movePiece(button As String, piece As String)
     If frm Is Nothing Then Init
     Dim posBefore As String
     Dim pieceEaten As String
-    
+    Dim btn As String
+
     If playerOneTurn Then
         If playerOne(piece)("type") = "Pawn" And Mid(button, 2, 1) = "8" Then PromotePawn.Show
+        If playerOne(activePiece)("type") = "Pawn" And buttons(button)("enPassant") <> "" Then
+            pieceEaten = buttons(button)("enPassant")
+            buttons(button)("enPassant") = ""
+            buttons(playerTwo(pieceEaten)("newPos"))("isPiece") = False
+            buttons(playerTwo(pieceEaten)("newPos"))("player") = 0
+            buttons(playerTwo(pieceEaten)("newPos"))("piece") = ""
+            playerTwo(pieceEaten)("dead") = True
+            playerTwo(pieceEaten)("newPos") = ""
+            If piecesEatenP1 > 7 Then
+                frm.Controls(pieceEaten).left = 390 + ((piecesEatenP1 - 8) * 20)
+                frm.Controls(pieceEaten).Top = 287 + 40
+            Else
+                frm.Controls(pieceEaten).left = 390 + (piecesEatenP1 * 20)
+                frm.Controls(pieceEaten).Top = 287
+            End If
+            piecesEatenP1 = piecesEatenP1 + 1
+        End If
+        If playerOne(activePiece)("type") = "Pawn" And playerOne(activePiece)("firstMove") Then
+            If Mid(button, 2, 1) - Mid(playerOne(activePiece)("firstPos"), 2, 1) > 1 Then
+                btn = Mid(activePiece, 1, 1) & CStr(CInt(Mid(activePiece, 2, 1)) + 1)
+                If Not buttons(btn)("isPiece") Then
+                    buttons(btn)("enPassant") = activePiece
+                    playerOne(activePiece)("enPassant") = True
+                End If
+            End If
+        ElseIf playerOne(activePiece)("type") = "Pawn" Then
+            playerOne(activePiece)("enPassant") = False
+        End If
         If piece = "E1King" Then
             If button = "G1" Then movePiece "F1", "H1Rook"
             If button = "C1" Then movePiece "D1", "A1Rook"
         End If
         lastMovement = Array(playerOne(activePiece)("newPos"), button)
-        frm.Controls(piece).Left = CDbl(buttons(button)("posxy")("x")) + 5
+        frm.Controls(piece).left = CDbl(buttons(button)("posxy")("x")) + 5
         frm.Controls(piece).Top = CDbl(buttons(button)("posxy")("y")) + 5
         If buttons(button)("player") = 2 Then
             pieceEaten = buttons(button)("piece")
             playerTwo(pieceEaten)("dead") = True
             playerTwo(pieceEaten)("newPos") = ""
             If piecesEatenP1 > 7 Then
-                frm.Controls(pieceEaten).Left = 390 + ((piecesEatenP1 - 8) * 20)
+                frm.Controls(pieceEaten).left = 390 + ((piecesEatenP1 - 8) * 20)
                 frm.Controls(pieceEaten).Top = 287 + 40
             Else
-                frm.Controls(pieceEaten).Left = 390 + (piecesEatenP1 * 20)
+                frm.Controls(pieceEaten).left = 390 + (piecesEatenP1 * 20)
                 frm.Controls(pieceEaten).Top = 287
             End If
             piecesEatenP1 = piecesEatenP1 + 1
@@ -231,21 +260,49 @@ Public Function movePiece(button As String, piece As String)
         playerOne(piece)("firstMove") = False
     Else
         If playerTwo(piece)("type") = "Pawn" And Mid(button, 2, 1) = "1" Then PromotePawn.Show
+         If playerTwo(activePiece)("type") = "Pawn" And playerTwo(activePiece)("firstMove") Then
+            If Mid(playerTwo(activePiece)("newPos"), 2, 1) - Mid(button, 2, 1) > 1 Then
+                btn = Mid(activePiece, 1, 1) & CStr(CInt(Mid(activePiece, 2, 1)) - 1)
+                If Not buttons(btn)("isPiece") Then
+                    buttons(btn)("enPassant") = activePiece
+                    playerTwo(activePiece)("enPassant") = True
+                End If
+            End If
+        ElseIf playerTwo(activePiece)("type") = "Pawn" Then
+            playerTwo(activePiece)("enPassant") = False
+        End If
+        If playerTwo(activePiece)("type") = "Pawn" And buttons(button)("enPassant") <> "" Then
+            pieceEaten = buttons(button)("enPassant")
+            buttons(button)("enPassant") = ""
+            buttons(playerOne(pieceEaten)("newPos"))("isPiece") = False
+            buttons(playerOne(pieceEaten)("newPos"))("player") = 0
+            buttons(playerOne(pieceEaten)("newPos"))("piece") = ""
+            playerOne(pieceEaten)("dead") = True
+            playerOne(pieceEaten)("newPos") = ""
+            If piecesEatenP2 > 7 Then
+                frm.Controls(pieceEaten).left = 390 + ((piecesEatenP2 - 8) * 20)
+                frm.Controls(pieceEaten).Top = 37
+            Else
+                frm.Controls(pieceEaten).left = 390 + (piecesEatenP2 * 20)
+                frm.Controls(pieceEaten).Top = 77
+            End If
+            piecesEatenP2 = piecesEatenP2 + 1
+        End If
         If piece = "E8King" Then
             If button = "G8" Then movePiece "F8", "H8Rook"
             If button = "C8" Then movePiece "D8", "A8Rook"
         End If
         lastMovement = Array(playerTwo(activePiece)("newPos"), button)
-        frm.Controls(piece).Left = CDbl(buttons(button)("posxy")("x")) + 5
+        frm.Controls(piece).left = CDbl(buttons(button)("posxy")("x")) + 5
         frm.Controls(piece).Top = CDbl(buttons(button)("posxy")("y")) + 5
         If buttons(button)("player") = 1 Then
             pieceEaten = buttons(button)("piece")
             playerOne(pieceEaten)("dead") = True
             If piecesEatenP2 > 7 Then
-                frm.Controls(pieceEaten).Left = 390 + ((piecesEatenP2 - 8) * 20)
+                frm.Controls(pieceEaten).left = 390 + ((piecesEatenP2 - 8) * 20)
                 frm.Controls(pieceEaten).Top = 37
             Else
-                frm.Controls(pieceEaten).Left = 390 + (piecesEatenP2 * 20)
+                frm.Controls(pieceEaten).left = 390 + (piecesEatenP2 * 20)
                 frm.Controls(pieceEaten).Top = 77
             End If
             piecesEatenP2 = piecesEatenP2 + 1
@@ -268,7 +325,6 @@ End Function
 Public Function breaksCheck(piece As String, button As String, boolPlayerOne As Boolean) As Boolean
     breaksCheck = False
     If buttons(button)("piece") = "" Then
-        If piece = "H7Pawn" Then MsgBox buttons(button)("piece") & buttons(button)("isPiece")
         If boolPlayerOne Then
             If activePiece = "E1King" And Not isCheck(activePiece, button, True) Then
                 breaksCheck = True
@@ -293,10 +349,10 @@ Public Function breaksCheck(piece As String, button As String, boolPlayerOne As 
             breaksCheck = True
         End If
         Exit Function
-
+        
     End If
-    
 
+    
     Dim piecesEater As Variant
     Dim pieceToEat As Variant
     If boolPlayerOne Then

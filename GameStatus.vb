@@ -105,7 +105,7 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
     If boolPlayerOne Then
         playerOne("E1King")("piecesEater") = Empty
         For Each pieceP2 In playerTwo.keys
-            If playerTwo(pieceP2)("dead") Then Goto ContinueLoopP1
+            If playerTwo(pieceP2)("dead") Then GoTo ContinueLoopP1
             If Mid(pieceP2, 2, 1) = "7" Then
                 pos = playerTwo(pieceP2)("newPos")
                 indexLetter = numbers(Mid(pos, 1, 1))
@@ -114,13 +114,13 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
             Else
                 availablePosP2 = getAvailablePosP2(CStr(pieceP2), emulatePiece)
             End If
-            If IsEmpty(availablePosP2) Then Goto ContinueLoopP1
+            If IsEmpty(availablePosP2) Then GoTo ContinueLoopP1
             If ArrayContains(availablePosP2, position) Then
                 playerOne("E1King")("piecesEater") = addToArr(playerOne("E1King")("piecesEater"), pieceP2)
                 isCheck = True
             End If
             
-            ContinueLoopP1 :
+ContinueLoopP1:
             If debugg Then MsgBox CStr(pieceP2) & " |   " & Join(availablePosP2, ", ") & "  |  " & Join(emulatePiece, ", ")
             
         Next pieceP2
@@ -128,7 +128,7 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
     Else
         playerTwo("E8King")("piecesEater") = Empty
         For Each pieceP1 In playerOne.keys
-            If playerOne(pieceP1)("dead") Then Goto ContinueLoopP2
+            If playerOne(pieceP1)("dead") Then GoTo ContinueLoopP2
             If Mid(pieceP1, 2, 1) = "2" Then
                 pos = playerOne(pieceP1)("newPos")
                 indexLetter = numbers(Mid(pos, 1, 1))
@@ -137,13 +137,13 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
             Else
                 availablePosP1 = getAvailablePosP1(CStr(pieceP1), emulatePiece)
             End If
-            If IsEmpty(availablePosP1) Then Goto ContinueLoopP2
+            If IsEmpty(availablePosP1) Then GoTo ContinueLoopP2
             If ArrayContains(availablePosP1, position) Then
                 isCheck = True
                 playerTwo("E8King")("piecesEater") = addToArr(playerTwo("E8King")("piecesEater"), pieceP1)
             End If
             
-            ContinueLoopP2 :
+ContinueLoopP2:
         Next pieceP1
     End If
     
@@ -312,13 +312,14 @@ Public Function isInnsuficientMaterial()
 
     If countPiecesP1 = 2 And countPiecesP2 = 2 Then
         ' King and Bishop vs King and Bishop
-        If Not (playerOne("C1Bishop")("dead") And playerTwo("F8Bishop")("dead")) Then
+        If (playerOne("C1Bishop")("dead") And playerTwo("F8Bishop")("dead")) Then
+            isInnsuficientMaterial = True
             Exit Function
-        ElseIf Not (playerOne("F1Bishop")("dead") And playerTwo("C8Bishop")("dead")) Then
+        ElseIf (playerOne("F1Bishop")("dead") And playerTwo("C8Bishop")("dead")) Then
+            isInnsuficientMaterial = True
             Exit Function
         End If
     End If
-    isInnsuficientMaterial = True
 End Function
 
 
@@ -328,3 +329,4 @@ Public Function finishGame()
     gameFinished = True
     handleButtons
 End Function
+
