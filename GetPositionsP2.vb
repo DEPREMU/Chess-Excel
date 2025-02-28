@@ -215,6 +215,16 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        lastPos = playerone(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerone(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerone(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerone(emulatePiece(0))("newPos"))("isPiece")
+        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerone(emulatePiece(0))("newPos"))("player") = 0
+        playerone(emulatePiece(0))("newPos") = emulatePiece(1)
+        buttons(emulatePiece(1))("isPiece") = True
+    End If
     
     Set availablePos = CreateObject("Scripting.Dictionary")
     
@@ -321,6 +331,14 @@ Public Function getAvailablePosRookP2(piece As String, emulatePiece As Variant) 
         End If
     Next value
     
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        playerone(emulatePiece(0))("newPos") = lastPos
+        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerone(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerone(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = False
+    End If
+    
     If valuesAdded = 0 Then
         getAvailablePosRookP2 = Empty
     Else
@@ -341,6 +359,16 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        lastPos = playerone(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerone(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerone(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerone(emulatePiece(0))("newPos"))("isPiece")
+        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerone(emulatePiece(0))("newPos"))("player") = 0
+        playerone(emulatePiece(0))("newPos") = emulatePiece(1)
+        buttons(emulatePiece(1))("isPiece") = True
+    End If
     
     Set availablePos = CreateObject("Scripting.Dictionary")
     
@@ -451,6 +479,14 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
+
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        playerone(emulatePiece(0))("newPos") = lastPos
+        buttons(playerone(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerone(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerone(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = False
+    End If
     
     If valuesAdded = 0 Then
         getAvailablePosBishopP2 = Empty
@@ -458,4 +494,3 @@ Public Function getAvailablePosBishopP2(piece As String, emulatePiece As Variant
         getAvailablePosBishopP2 = availablePos.keys
     End If
 End Function
-

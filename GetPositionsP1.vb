@@ -78,7 +78,7 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
             indexLetter = numbers(letter)
             number = CInt(Mid(position, 2, 1))
 
-            offsets = Array(Array(2, -1), Array(2, 1), Array(-2, -1), Array(-2, 1), Array(1, -2), Array(1, 2), Array(-1, -2), Array(-1, 2))
+            offsets = Array(Array(2, - 1), Array(2, 1), Array( - 2, - 1), Array( - 2, 1), Array(1, - 2), Array(1, 2), Array( - 1, - 2), Array( - 1, 2))
 
             For i = LBound(offsets) To UBound(offsets)
                 newNum = number + offsets(i)(0)
@@ -152,7 +152,7 @@ Public Function getPosKingP1(piece As String, position As String) As Variant
     valuesAdded = 0
 
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
+    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
 
     For i = LBound(directions) To UBound(directions)
 
@@ -198,6 +198,16 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
     valuesAdded = 0
 
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        lastPos = playerTwo(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerTwo(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerTwo(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece")
+        buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerTwo(emulatePiece(0))("newPos"))("player") = 0
+        playerTwo(emulatePiece(0))("newPos") = emulatePiece(1)
+        buttons(emulatePiece(1))("isPiece") = True
+    End If
 
     letter = Mid(playerOne(piece)("newPos"), 1, 1)
     indexLetter = numbers(letter)
@@ -226,7 +236,7 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
     Next i
     
     ' Bottom
-    For Each value In range(CInt(number), 0, -1)
+    For Each value In range(CInt(number), 0, - 1)
         If number <> value And value Then
             btn = letter & CStr(value)
             If emulatePiece(1) = btn Then
@@ -252,7 +262,7 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
     ' Left
     For Each value In Array("H", "G", "F", "E", "D", "C", "B", "A")
         If indexLetter = 1 Then Exit For
-        If indexLetter < numbers(value) Or value = letter Then GoTo ContinueLoop
+        If indexLetter < numbers(value) Or value = letter Then Goto ContinueLoop
 
         btn = value & number
         If emulatePiece(1) = btn Then
@@ -273,8 +283,8 @@ Public Function getPosRookP1(piece As String, Optional emulatePiece As Variant) 
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
 
-        GoTo ContinueLoop
-ContinueLoop:
+        Goto ContinueLoop
+        ContinueLoop :
     Next value
     
     ' Right
@@ -301,6 +311,14 @@ ContinueLoop:
             valuesAdded = valuesAdded + 1
         End If
     Next value
+
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        playerTwo(emulatePiece(0))("newPos") = lastPos
+        buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerTwo(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerTwo(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = False
+    End If
     
     If valuesAdded = 0 Then
         getPosRookP1 = Empty
@@ -317,10 +335,24 @@ Public Function getPosBishopP1(piece As String, Optional emulatePiece As Variant
     Dim number As String
     Dim valuesAdded As Integer
     Dim availablePos As Object
+    Dim lastPos As Variant
+    Dim lastPiece As Variant
+    Dim lastPlayer As Variant
+    Dim lastIsPiece As Variant
     Set availablePos = CreateObject("Scripting.Dictionary")
     valuesAdded = 0
     
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        lastPos = playerTwo(emulatePiece(0))("newPos")
+        lastPlayer = buttons(playerTwo(emulatePiece(0))("newPos"))("player")
+        lastPiece = buttons(playerTwo(emulatePiece(0))("newPos"))("piece")
+        lastIsPiece = buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece")
+        buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece") = False
+        buttons(playerTwo(emulatePiece(0))("newPos"))("player") = 0
+        playerTwo(emulatePiece(0))("newPos") = emulatePiece(1)
+        buttons(emulatePiece(1))("isPiece") = True
+    End If
     
     letter = Mid(playerOne(piece)("newPos"), 1, 1)
     indexLetter = numbers(letter)
@@ -429,6 +461,14 @@ Public Function getPosBishopP1(piece As String, Optional emulatePiece As Variant
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
+    
+    If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
+        playerTwo(emulatePiece(0))("newPos") = lastPos
+        buttons(playerTwo(emulatePiece(0))("newPos"))("isPiece") = lastIsPiece
+        buttons(playerTwo(emulatePiece(0))("newPos"))("player") = lastPlayer
+        buttons(playerTwo(emulatePiece(0))("newPos"))("piece") = lastPiece
+        buttons(emulatePiece(1))("isPiece") = False
+    End If
     
     If valuesAdded = 0 Then Exit Function
     

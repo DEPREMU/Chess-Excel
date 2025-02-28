@@ -15,8 +15,8 @@ End Sub
 Public Function checkGameStatus(piece As String)
     If frm Is Nothing Then Init
     Dim localPiece As Variant
-    
-    
+
+
     If isCheckMate("E1King", True) Then
         MsgBox "Player two wins"
         frm.LComments.Caption = "W Player Two"
@@ -30,7 +30,7 @@ Public Function checkGameStatus(piece As String)
         finishGame
         Exit Function
     End If
-    
+
     If isCheck("E1King", CStr(playerOne("E1King")("newPos")), True) Then
         frm.LComments.Caption = "Check Player One"
         For Each localPiece In playerOne("E1King")("piecesEater")
@@ -56,8 +56,8 @@ Public Function checkGameStatus(piece As String)
             rePaintCases
         End If
     End If
-    
-    
+
+
 End Function
 
 
@@ -71,12 +71,12 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
     Dim availablePosP1 As Variant
     Dim availablePosP2 As Variant
     isCheck = False
-
+    
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
     If IsMissing(debugg) Then debugg = False
-
-
-
+    
+    
+    
     If boolPlayerOne Then
         playerOne("E1King")("piecesEater") = Empty
         For Each pieceP2 In playerTwo.keys
@@ -94,12 +94,12 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
                 playerOne("E1King")("piecesEater") = addToArr(playerOne("E1King")("piecesEater"), pieceP2)
                 isCheck = True
             End If
-
+            
             ContinueLoopP1 :
             If debugg Then MsgBox CStr(pieceP2) & " |   " & Join(availablePosP2, ", ") & "  |  " & Join(emulatePiece, ", ")
-
+            
         Next pieceP2
-
+        
     Else
         playerTwo("E8King")("piecesEater") = Empty
         For Each pieceP1 In playerOne.keys
@@ -117,11 +117,11 @@ Public Function isCheck(piece As String, position As String, boolPlayerOne As Bo
                 isCheck = True
                 playerTwo("E8King")("piecesEater") = addToArr(playerTwo("E8King")("piecesEater"), pieceP1)
             End If
-
+            
             ContinueLoopP2 :
         Next pieceP1
     End If
-
+    
 End Function
 
 
@@ -141,7 +141,7 @@ Public Function isCheckMate(piece As String, boolPlayerOne As Boolean) As Boolea
     countMate = 0
     countPos = 0
     isCheckMate = False
-    
+
     If boolPlayerOne Then
         availablePos = getPosKingP1(piece, CStr(playerOne(piece)("newPos")))
         If IsEmpty(availablePos) Or Not isCheck("E1King", CStr(playerOne("E1King")("newPos")), True) Then Exit Function
@@ -151,26 +151,27 @@ Public Function isCheckMate(piece As String, boolPlayerOne As Boolean) As Boolea
             If isCheck(piece, CStr(pos), True) Then countMate = countMate + 1
             countPos = countPos + 1
         Next pos
-        For Each pieceEater In playerOne("E1King")("piecesEater")
-            For Each localPiece In playerOne.keys
-                positionsEater = playerTwo(pieceEater)("nextPos")
-                positionsPiece = playerOne(localPiece)("nextPos")
-                If Not IsEmpty(positionsEater) And Not IsEmpty(positionsPiece) Then
-                    equalsValues = equalsValuesArrs(positionsEater, positionsPiece)
-                    If Not IsEmpty(equalsValues) Then
-                        For Each eqValue In equalsValues
-                            If Not isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(localPiece, eqValue)) Then countMate = countMate - 1
-                        Next eqValue
+        If Not IsEmpty(playerOne("E1King")("piecesEater")) Then
+            For Each pieceEater In playerOne("E1King")("piecesEater")
+                For Each localPiece In playerOne.keys
+                    positionsEater = playerTwo(pieceEater)("nextPos")
+                    positionsPiece = playerOne(localPiece)("nextPos")
+                    If Not IsEmpty(positionsEater) And Not IsEmpty(positionsPiece) Then
+                        equalsValues = equalsValuesArrs(positionsEater, positionsPiece)
+                        If Not IsEmpty(equalsValues) Then
+                            For Each eqValue In equalsValues
+                                If Not isCheck("E1King", CStr(playerOne("E1King")("newPos")), True, Array(localPiece, eqValue)) Then countMate = countMate - 1
+                            Next eqValue
+                        End If
                     End If
-                End If
-            Next localPiece
-        Next pieceEater
-
+                Next localPiece
+            Next pieceEater
+        End If
         If countMate >= countPos Then
             isCheckMate = True
             Exit Function
         End If
-
+        
     Else
         availablePos = posiblePosKingP2(piece, CStr(playerTwo(piece)("newPos")))
         If IsEmpty(availablePos) Or Not isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False) Then Exit Function
@@ -180,21 +181,22 @@ Public Function isCheckMate(piece As String, boolPlayerOne As Boolean) As Boolea
             If isCheck(piece, CStr(pos), False) Then countMate = countMate + 1
             countPos = countPos + 1
         Next pos
-        For Each pieceEater In playerTwo("E8King")("piecesEater")
-            For Each localPiece In playerTwo.keys
-                positionsEater = playerOne(pieceEater)("nextPos")
-                positionsPiece = playerTwo(localPiece)("nextPos")
-                If Not IsEmpty(positionsEater) And Not IsEmpty(positionsPiece) Then
-                    equalsValues = equalsValuesArrs(positionsEater, positionsPiece)
-                    If Not IsEmpty(equalsValues) Then
-                        For Each eqValue In equalsValues
-                            If Not isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(localPiece, eqValue)) Then countMate = countMate - 1
-                        Next eqValue
+        If Not IsEmpty(playerTwo("E8King")("piecesEater")) Then
+            For Each pieceEater In playerTwo("E8King")("piecesEater")
+                For Each localPiece In playerTwo.keys
+                    positionsEater = playerOne(pieceEater)("nextPos")
+                    positionsPiece = playerTwo(localPiece)("nextPos")
+                    If Not IsEmpty(positionsEater) And Not IsEmpty(positionsPiece) Then
+                        equalsValues = equalsValuesArrs(positionsEater, positionsPiece)
+                        If Not IsEmpty(equalsValues) Then
+                            For Each eqValue In equalsValues
+                                If Not isCheck("E8King", CStr(playerTwo("E8King")("newPos")), False, Array(localPiece, eqValue)) Then countMate = countMate - 1
+                            Next eqValue
+                        End If
                     End If
-                End If
-            Next localPiece
-        Next pieceEater
-
+                Next localPiece
+            Next pieceEater
+        End If
         If countMate >= countPos Then
             isCheckMate = True
             Exit Function
