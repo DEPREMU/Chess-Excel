@@ -8,6 +8,7 @@
 '   player: 0 | 1 | 2;
 '   name: string;
 '   piece?: string;
+'   enPassant: string;
 ' }
 '
 ' interface ChessPiece {
@@ -20,33 +21,30 @@
 '   danger: boolean;
 '   piecesEater: string[] | null;
 '   dead: boolean;
+'   enPassant?: boolean; //? Only Pawns
 ' }
-'
-' const colors = {
-'   danger: &H33FF,
-'   caseSelected: &HFFD700,
-'   pieceEaterAndCaseSelected: &H80FF&,
-'   pieceEater: &HFF6347,
-'   BlackCase: RGB(125, 135, 150),
-'   WhiteCase: RGB(240, 217, 181),
-'   lastMovement: &HFFC0FF,
+' interface colors {
+'   danger: &H33FF;
+'   caseSelected: &HFFD700:
+'   pieceEaterAndCaseSelected: &H80FF&;
+'   pieceEater: &HFF6347;
+'   BlackCase: RGB(125, 135, 150);
+'   WhiteCase: RGB(240, 217, 181);
+'   lastMovement: &HFFC0FF;
 ' }
 '
 ' interface buttons {
 '   [button: string]: ButtonInfo;
 '   //? F5: ButtonInfo;
 ' }
-'
 ' interface playerOne {
 '   [namePiece: string]: ChessPiece;
 '   //? A2Pawn: ChessPiece;
 ' }
-'
 ' interface playerTwo {
 '   [namePiece: string]: ChessPiece;
 '   //? E8King: ChessPiece;
 ' }
-'
 ' const letters = {
 '   a: 1,
 '   b: 2,
@@ -67,4 +65,8 @@
 '   7: "g",
 '   8: "h",
 ' };
+'
+'
+' enPassant = [piece, buttonEnPassant]
+' emulatePiece = [piece, button]
 '

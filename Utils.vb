@@ -6,38 +6,42 @@ Private Sub Init()
     Set frm = UserForms(0)
 End Sub
 
-Public Sub posPieces()
+Public Sub placePieces()
     Dim value As Variant
+    Dim currentPos As Variant
     If frm Is Nothing Then Init
 
     For Each value In playerOne.keys
-        If playerOne(value)("dead") Then Goto ContinueLoop
-        frm.Controls(value).Left = frm.Controls(playerOne(value)("newPos")).Left + 5
-        frm.Controls(value).Top = frm.Controls(playerOne(value)("newPos")).Top + 5
-
-        ContinueLoop :
+        If Not playerOne(value)("dead") Then
+            currentPos = playerOne(value)("newPos")
+            frm.Controls(value).Left = frm.Controls(currentPos).Left + 5
+            frm.Controls(value).Top = frm.Controls(currentPos).Top + 5
+        End If
     Next value
 
     For Each value In playerTwo.keys
-        If playerTwo(value)("dead") Then Goto ContinueLoop1
-        frm.Controls(value).Left = frm.Controls(playerTwo(value)("newPos")).Left + 5
-        frm.Controls(value).Top = frm.Controls(playerTwo(value)("newPos")).Top + 5
-
-        ContinueLoop1 :
+        If Not playerTwo(value)("dead") Then
+            currentPos = playerTwo(value)("newPos")
+            frm.Controls(value).Left = frm.Controls(currentPos).Left + 5
+            frm.Controls(value).Top = frm.Controls(currentPos).Top + 5
+        End If
     Next value
 End Sub
 
-Public Function rePosPieces()
+Public Function repositionPieces()
     If frm Is Nothing Then Init
     Dim piece As Variant
+    Dim buttonPiece As Variant
     
     For Each piece In playerOne.keys
-        frm.Controls(piece).Left = CInt(buttons(Mid(piece, 1, 2))("posxy")("x")) + 5
-        frm.Controls(piece).Top = CInt(buttons(Mid(piece, 1, 2))("posxy")("y")) + 5
+        buttonPiece = Mid(piece, 1, 2)
+        frm.Controls(piece).Left = CInt(buttons(buttonPiece)("posxy")("x")) + 5
+        frm.Controls(piece).Top = CInt(buttons(buttonPiece)("posxy")("y")) + 5
     Next piece
     For Each piece In playerTwo.keys
-        frm.Controls(piece).Left = buttons(Mid(piece, 1, 2))("posxy")("x") + 5
-        frm.Controls(piece).Top = buttons(Mid(piece, 1, 2))("posxy")("y") + 5
+        buttonPiece = Mid(piece, 1, 2)
+        frm.Controls(piece).Left = buttons(buttonPiece)("posxy")("x") + 5
+        frm.Controls(piece).Top = buttons(buttonPiece)("posxy")("y") + 5
     Next piece
 End Function
 
@@ -69,10 +73,7 @@ Public Sub swapButtons()
     Dim i As Integer
     Dim j As Integer
     Dim k As Integer
-    Dim letter As String
-    Dim number As String
     Dim value As Variant
-    Dim value2 As Variant
 
     If frm.LA.Caption = "H" Then
         Dim z As Integer
@@ -94,12 +95,10 @@ Public Sub swapButtons()
             frm.Controls(value).Top = buttons(value)("posxy")("y")
         Next value
     End If
-    posPieces
-
+    placePieces
 End Sub
 
-
-Public Sub handleButtons()
+Public Sub changeStateButtons()
     If frm Is Nothing Then Init
     Dim button As Variant
 
@@ -108,18 +107,35 @@ Public Sub handleButtons()
     Next button
 End Sub
 
-
 Public Function rePaintCases()
     If frm Is Nothing Then Init
     
     Dim value As Variant
     For Each value In buttons.keys
         If frm.Controls(value).BackColor <> buttons(value)("bgcolor") Then
-            If playerOne("E1King")("newPos") = value And boolCheckPlayer1 Then Goto ContinueLoop
-            If playerTwo("E8King")("newPos") = value And boolCheckPlayer2 Then Goto ContinueLoop
+            If playerOne("E1King")("newPos") = value _
+                 And boolCheckPlayer1 Then Goto ContinueLoop
+            If playerTwo("E8King")("newPos") = value _
+                 And boolCheckPlayer2 Then Goto ContinueLoop
             frm.Controls(value).BackColor = buttons(value)("bgcolor")
         End If
         ContinueLoop :
     Next value
     
+End Function
+
+Public Function getPosPlayer(value As Variant, boolPlayerOne As Boolean) As Variant
+    If boolPlayerOne Then
+        getPosPlayer = playerOne(value)("newPos")
+    Else
+        getPosPlayer = playerTwo(value)("newPos")
+    End If
+End Function
+
+Public Function getNextPosPlayer(value As Variant, boolPlayerOne As Boolean) As Variant
+    If boolPlayerOne Then
+        getNextPosPlayer = playerOne(value)("nextPos")
+    Else
+        getNextPosPlayer = playerTwo(value)("nextPos")
+    End If
 End Function
