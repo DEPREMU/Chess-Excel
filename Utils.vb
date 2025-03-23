@@ -109,7 +109,7 @@ End Sub
 
 Public Function rePaintCases()
     If frm Is Nothing Then Init
-    
+
     Dim value As Variant
     For Each value In buttons.keys
         If frm.Controls(value).BackColor <> buttons(value)("bgcolor") Then
@@ -121,21 +121,50 @@ Public Function rePaintCases()
         End If
         ContinueLoop :
     Next value
-    
+
+    paintLastMovementCases
 End Function
 
-Public Function getPosPlayer(value As Variant, boolPlayerOne As Boolean) As Variant
+Public Function isPlayerOnePiece(piece As String) As Boolean
+    isPlayerOnePiece = playerOne.exists(piece)
+End Function
+
+Public Function getTypePiece(piece As String, boolPlayerOne) As String
     If boolPlayerOne Then
-        getPosPlayer = playerOne(value)("newPos")
+        getTypePiece = playerOne(piece)("type")
     Else
-        getPosPlayer = playerTwo(value)("newPos")
+        getTypePiece = playerTwo(piece)("type")
     End If
 End Function
 
-Public Function getNextPosPlayer(value As Variant, boolPlayerOne As Boolean) As Variant
+Public Function getDeadState(piece As String, boolPlayerOne) As Boolean
     If boolPlayerOne Then
-        getNextPosPlayer = playerOne(value)("nextPos")
+        getDeadState = playerOne(piece)("dead")
     Else
-        getNextPosPlayer = playerTwo(value)("nextPos")
+        getDeadState = playerTwo(piece)("dead")
+    End If
+End Function
+
+Public Function getPosPlayer(piece As String, boolPlayerOne) As String
+    If boolPlayerOne Then
+        getPosPlayer = playerOne(piece)("newPos")
+    Else
+        getPosPlayer = playerTwo(piece)("newPos")
+    End If
+End Function
+
+Public Function getNextPosPlayer(piece As String, boolPlayerOne) As String
+    If boolPlayerOne Then
+        getNextPosPlayer = playerOne(piece)("nextPos")
+    Else
+        getNextPosPlayer = playerTwo(piece)("nextPos")
+    End If
+End Function
+
+Public Function getNextPosPlayerNotByNextPos(piece As String, boolPlayerOne) As String
+    If boolPlayerOne Then
+        getNextPosPlayerNotByNextPos = getAvailablePosP1(piece)
+    Else
+        getNextPosPlayerNotByNextPos = getAvailablePosP2(piece)
     End If
 End Function
