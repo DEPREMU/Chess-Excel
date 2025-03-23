@@ -80,12 +80,12 @@ Public Sub disablePiece(piece As String)
         If Not playerOne(piece)("moved") Then Exit Sub
         playerOne(piece)("nextPos") = getAvailablePosP1(piece)
         playerOne(piece)("moved") = False
-        '! swapLabels
+        swapLabels
     Else
         If Not playerTwo(piece)("moved") Then Exit Sub
         playerTwo(piece)("nextPos") = getAvailablePosP2(piece)
         playerTwo(piece)("moved") = False
-        '! swapLabels
+        swapLabels
     End If
     checkGameStatus (piece)
     activePiece = ""
@@ -364,4 +364,3 @@ Public Function addPieceToEatenPieces(button As String)
     frm.Controls(pieceEaten).Left = 390 + ((piecesEaten - IIf(piecesEaten > 7, 8, 0)) * 20)
     frm.Controls(pieceEaten).Top = IIf(playerOneTurn, 287, 78) + IIf(piecesEaten > 7, 40, 0)
 End Function
-

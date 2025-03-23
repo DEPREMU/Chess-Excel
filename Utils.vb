@@ -10,7 +10,7 @@ Public Sub placePieces()
     Dim value As Variant
     Dim currentPos As Variant
     If frm Is Nothing Then Init
-
+    
     For Each value In playerOne.keys
         If Not playerOne(value)("dead") Then
             currentPos = playerOne(value)("newPos")
@@ -18,7 +18,7 @@ Public Sub placePieces()
             frm.Controls(value).Top = frm.Controls(currentPos).Top + 5
         End If
     Next value
-
+    
     For Each value In playerTwo.keys
         If Not playerTwo(value)("dead") Then
             currentPos = playerTwo(value)("newPos")
@@ -32,7 +32,7 @@ Public Function repositionPieces()
     If frm Is Nothing Then Init
     Dim piece As Variant
     Dim buttonPiece As Variant
-    
+
     For Each piece In playerOne.keys
         buttonPiece = Mid(piece, 1, 2)
         frm.Controls(piece).Left = CInt(buttons(buttonPiece)("posxy")("x")) + 5
@@ -47,11 +47,11 @@ End Function
 
 Public Sub swapLabels()
     If frm Is Nothing Then Init
-
+    
     Dim i As Integer
     Dim letters As String
     Dim numbers As String
-
+    
     If frm.LA.Caption = "A" Then
         letters = "HGFEDCBA"
         numbers = "87654321"
@@ -59,7 +59,7 @@ Public Sub swapLabels()
         letters = "ABCDEFGH"
         numbers = "12345678"
     End If
-
+    
     For i = 1 To 8
         frm.Controls("L" & Chr(64 + i)).Caption = Mid(letters, i, 1)
         frm.Controls("L" & i).Caption = Mid(numbers, i, 1)
@@ -69,12 +69,12 @@ End Sub
 
 Public Sub swapButtons()
     If frm Is Nothing Then Init
-
+    
     Dim i As Integer
     Dim j As Integer
     Dim k As Integer
     Dim value As Variant
-
+    
     If frm.LA.Caption = "H" Then
         Dim z As Integer
         z = 8
@@ -101,7 +101,7 @@ End Sub
 Public Sub changeStateButtons()
     If frm Is Nothing Then Init
     Dim button As Variant
-
+    
     For Each button In buttons.keys
         frm.Controls(button).Enabled = Not frm.Controls(button).Enabled
     Next button
@@ -109,19 +109,19 @@ End Sub
 
 Public Function rePaintCases()
     If frm Is Nothing Then Init
-
+    
     Dim value As Variant
     For Each value In buttons.keys
         If frm.Controls(value).BackColor <> buttons(value)("bgcolor") Then
             If playerOne("E1King")("newPos") = value _
-                 And boolCheckPlayer1 Then Goto ContinueLoop
+                 And boolCheckPlayer1 Then GoTo ContinueLoop
             If playerTwo("E8King")("newPos") = value _
-                 And boolCheckPlayer2 Then Goto ContinueLoop
+                 And boolCheckPlayer2 Then GoTo ContinueLoop
             frm.Controls(value).BackColor = buttons(value)("bgcolor")
         End If
-        ContinueLoop :
+ContinueLoop:
     Next value
-
+    
     paintLastMovementCases
 End Function
 
@@ -129,7 +129,7 @@ Public Function isPlayerOnePiece(piece As String) As Boolean
     isPlayerOnePiece = playerOne.exists(piece)
 End Function
 
-Public Function getTypePiece(piece As String, boolPlayerOne) As String
+Public Function getTypePiece(piece As String, boolPlayerOne As Boolean) As String
     If boolPlayerOne Then
         getTypePiece = playerOne(piece)("type")
     Else
@@ -137,7 +137,7 @@ Public Function getTypePiece(piece As String, boolPlayerOne) As String
     End If
 End Function
 
-Public Function getDeadState(piece As String, boolPlayerOne) As Boolean
+Public Function getDeadState(piece As String, boolPlayerOne As Boolean) As Boolean
     If boolPlayerOne Then
         getDeadState = playerOne(piece)("dead")
     Else
@@ -145,7 +145,7 @@ Public Function getDeadState(piece As String, boolPlayerOne) As Boolean
     End If
 End Function
 
-Public Function getPosPlayer(piece As String, boolPlayerOne) As String
+Public Function getPosPlayer(piece As String, boolPlayerOne As Boolean) As String
     If boolPlayerOne Then
         getPosPlayer = playerOne(piece)("newPos")
     Else
@@ -153,7 +153,7 @@ Public Function getPosPlayer(piece As String, boolPlayerOne) As String
     End If
 End Function
 
-Public Function getNextPosPlayer(piece As String, boolPlayerOne) As String
+Public Function getNextPosPlayer(piece As String, boolPlayerOne As Boolean) As Variant
     If boolPlayerOne Then
         getNextPosPlayer = playerOne(piece)("nextPos")
     Else
@@ -161,10 +161,11 @@ Public Function getNextPosPlayer(piece As String, boolPlayerOne) As String
     End If
 End Function
 
-Public Function getNextPosPlayerNotByNextPos(piece As String, boolPlayerOne) As String
+Public Function getNextPosPlayerNotByNextPos(piece As String, boolPlayerOne As Boolean) As Variant
     If boolPlayerOne Then
         getNextPosPlayerNotByNextPos = getAvailablePosP1(piece)
     Else
         getNextPosPlayerNotByNextPos = getAvailablePosP2(piece)
     End If
 End Function
+

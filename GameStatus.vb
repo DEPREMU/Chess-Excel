@@ -49,14 +49,16 @@ Public Function checkGameStatus(piece As String)
         frm.LComments.Caption = "W Player " & IIf(isCheckMateP1, "Two", "One")
         currentPos = IIf(isCheckMateP1 Or playerOne("E1King")("dead"), playerOne(kingP1)("newPos"), _
             playerTwo(kingP2)("newPos"))
-        frm.Controls(currentPos).BackColor = colors("danger")
+        If currentPos <> "" Then frm.Controls(currentPos).BackColor = colors("danger")
         isCheck CStr(currentPos), True
         piecesEater = IIf(isCheckMateP1, playerOne(kingP1)("piecesEater"), _
             playerTwo(kingP2)("piecesEater"))
-        For Each localPiece In piecesEater
-            currentPos = getPosPlayer(CStr(localPiece), Not isCheckMateP1)
-            frm.Controls(currentPos).BackColor = colors("pieceEater")
-        Next localPiece
+        If Not IsEmpty(piecesEater) Then
+            For Each localPiece In piecesEater
+                currentPos = getPosPlayer(CStr(localPiece), Not isCheckMateP1)
+                frm.Controls(currentPos).BackColor = colors("pieceEater")
+            Next localPiece
+        End If
         finishGame
         Exit Function
     End If
