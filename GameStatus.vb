@@ -67,7 +67,7 @@ Public Function checkGameStatus(piece As String)
     isCheckP2 = isCheck(CStr(playerTwo(kingP2)("newPos")), False)
 
     If Not isCheckP1 And Not isCheckP2 Then
-        If playerOneTurn Then
+        If Not playerOneTurn Then
             frm.LComments.Caption = "Player One Turn"
             boolCheckPlayer1 = False
         Else
@@ -106,8 +106,6 @@ Public Function isCheck(position As String, boolPlayerOne As Boolean, Optional e
 
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
 
-
-
     If boolPlayerOne Then
         playerOne("E1King")("piecesEater") = Empty
         For Each pieceP2 In playerTwo.keys
@@ -116,7 +114,7 @@ Public Function isCheck(position As String, boolPlayerOne As Boolean, Optional e
                     pos = playerTwo(pieceP2)("newPos")
                     indexLetter = CInt(numbers(Mid(pos, 1, 1)))
                     number = CInt(Mid(pos, 2, 1))
-                    availablePosP2 = Array(letters(CStr(indexLetter - 1)) & CStr(number - 1), letters(CStr(indexLetter + 1)) & CStr(number - 1))
+                    availablePosP2 = getAvailablePosP2(CStr(pieceP2), emulatePiece)
                 Else
                     availablePosP2 = getAvailablePosP2(CStr(pieceP2), emulatePiece)
                 End If
@@ -137,9 +135,7 @@ Public Function isCheck(position As String, boolPlayerOne As Boolean, Optional e
                     pos = playerOne(pieceP1)("newPos")
                     indexLetter = CInt(numbers(Mid(pos, 1, 1)))
                     number = CInt(Mid(pos, 2, 1))
-                    availablePosP1 = Array(letters(CStr(indexLetter - 1)) & _
-                        CStr(number - 1), letters(CStr(indexLetter + 1)) & _
-                        CStr(number - 1))
+                    availablePosP1 = getAvailablePosP1(CStr(pieceP1), emulatePiece)
                 Else
                     availablePosP1 = getAvailablePosP1(CStr(pieceP1), emulatePiece)
                 End If

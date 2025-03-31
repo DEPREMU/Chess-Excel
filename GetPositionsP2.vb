@@ -12,10 +12,6 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
     Dim letter As String
     Dim btn As String
     Dim valueToReturn As Object
-    Dim i As Integer
-    Dim j As Integer
-    Dim newNum As Integer
-    Dim player As Integer
     Dim availablePos As Object
     Dim value As Variant
     Dim posP1 As String
@@ -27,14 +23,12 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
     pieceType = playerTwo(piece)("type")
     
     Select Case pieceType
-            
         Case "Pawn"
             letter = Mid(playerTwo(piece)("newPos"), 1, 1)
             indexLetter = numbers(letter)
             number = Mid(playerTwo(piece)("newPos"), 2, 1)
-            
             For i = 0 To 1
-                leftOrRight = IIf(i = 0, 1, - 1)
+                leftOrRight = IIf(i = 0, 1, -1)
                 If letters(CStr(indexLetter - leftOrRight)) <> "" Then
                     btn = letters(CStr(indexLetter - leftOrRight)) & number
                     If btn <> "" Then
@@ -54,7 +48,9 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
                 If Not buttons(btn)("isPiece") Then
                     availablePos.Add btn, True
                     If playerTwo(piece)("firstMove") Then
-                        If Not buttons(letter & CStr(CInt(number) - 2))("isPiece") Then availablePos.Add letter & CStr(CInt(number) - 2), True
+                        If Not buttons(letter & CStr(CInt(number) - 2))("isPiece") Then
+                            availablePos.Add letter & CStr(CInt(number) - 2), True
+                        End If
                     End If
                 End If
             End If
@@ -78,34 +74,41 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
                     availablePos.Add btn, True
                 End If
             End If
-            
+
         Case "Rook"
             getAvailablePosP2 = getNextPosRook(piece, False, emulatePiece)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
-            
+
         Case "Knight"
             getAvailablePosP2 = getNextPosKnight(piece, False)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
 
         Case "Bishop"
             getAvailablePosP2 = getNextPosBishop(piece, False, emulatePiece)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
             
         Case "Queen"
+            Dim values As Variant
             values = getNextPosRook(piece, False, emulatePiece)
             If Not IsEmpty(values) Then
                 For Each value In values
                     availablePos.Add value, True
                 Next value
             End If
-            
+
             values = getNextPosBishop(piece, False, emulatePiece)
             If Not IsEmpty(values) Then
                 For Each value In values
                     availablePos.Add value, True
                 Next value
             End If
-            
+
         Case "King"
             values = possiblePosKingP2(piece, CStr(playerTwo(piece)("newPos")))
             If Not IsEmpty(values) Then
@@ -113,8 +116,9 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
             Else
                 getAvailablePosP2 = Empty
             End If
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
-            
     End Select
     
     i = 1
@@ -124,32 +128,36 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
             i = i + 1
         End If
     Next value
+    Set availablePos = Nothing
+    
     If i = 1 Then
         getAvailablePosP2 = Empty
+        Set valueToReturn = Nothing
         Exit Function
     End If
+    
     getAvailablePosP2 = valueToReturn.items
+    Set valueToReturn = Nothing
 End Function
 
 Public Function possiblePosKingP2(piece As String, position As String) As Variant
-    
     Dim letter As String
     Dim indexLetter As Integer
     Dim number As String
     Dim valuesAdded As Integer
     Dim availablePos As Object
     Set availablePos = CreateObject("Scripting.Dictionary")
-    valuesAdded = 0
     
     letter = Mid(playerTwo(piece)("newPos"), 1, 1)
     indexLetter = numbers(letter)
     number = Mid(playerTwo(piece)("newPos"), 2, 1)
     
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
+    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
+    
+    valuesAdded = 0
     
     For i = LBound(directions) To UBound(directions)
-        
         newLetterIndex = indexLetter + directions(i)(0)
         newNumber = CInt(number) + directions(i)(1)
         
@@ -163,13 +171,13 @@ Public Function possiblePosKingP2(piece As String, position As String) As Varian
     Next i
     
     If playerTwo(piece)("firstMove") Then
-        ' Enroque corto
+        ' Short castling
         If Not buttons("F8")("isPiece") And Not buttons("G8")("isPiece") And playerTwo("H8Rook")("firstMove") And Not playerTwo("H8Rook")("dead") Then
             availablePos.Add "G8", True
             valuesAdded = valuesAdded + 1
         End If
         
-        ' Enroque largo
+        ' Long castling
         If Not buttons("B8")("isPiece") And Not buttons("C8")("isPiece") And Not buttons("D8")("isPiece") And playerTwo("A8Rook")("firstMove") And Not playerTwo("A8Rook")("dead") Then
             availablePos.Add "C8", True
             valuesAdded = valuesAdded + 1

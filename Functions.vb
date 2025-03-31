@@ -22,6 +22,7 @@ Public Function range(start As Integer, stop1 As Variant, Optional Step As Integ
     End If
 
     range = result.keys
+    Set result = Nothing
 End Function
 
 Public Function ArrayContains(arr As Variant, value As Variant) As Boolean
@@ -40,17 +41,14 @@ Public Function ArrayContains(arr As Variant, value As Variant) As Boolean
     ArrayContains = False
 End Function
 
-
 Public Function equalsValuesArrs(arr1 As Variant, arr2 As Variant) As Variant
-    equalsValuesArr = Empty
-    If IsEmpty(arr1) Or IsEmpty(arr2) Then Exit Function
-
     Dim value As Variant
     Dim valueToReturn As Object
     Dim i As Integer
 
-    Set valueToReturn = CreateObject("Scripting.Dictionary")
+    If IsEmpty(arr1) Or IsEmpty(arr2) Then Exit Function
 
+    Set valueToReturn = CreateObject("Scripting.Dictionary")
     i = 1
     For Each value In arr1
         If ArrayContains(arr2, value) Then
@@ -59,11 +57,14 @@ Public Function equalsValuesArrs(arr1 As Variant, arr2 As Variant) As Variant
         End If
     Next value
 
-    If i = 1 Then Exit Function
+    If i = 1 Then
+        Set valueToReturn = Nothing ' Limpieza antes de salir si no se encontró nada
+        Exit Function
+    End If
 
     equalsValuesArrs = valueToReturn.items
+    Set valueToReturn = Nothing ' Limpieza de objeto para liberar memoria
 End Function
-
 
 
 Public Function deleteFromArr(arr As Variant, value As Variant, Optional count As Integer = - 1) As Variant
@@ -77,6 +78,7 @@ Public Function deleteFromArr(arr As Variant, value As Variant, Optional count A
 
     If IsEmpty(arr) Then
         deleteFromArr = Empty
+        Set newArr = Nothing
         Exit Function
     End If
 
@@ -104,18 +106,21 @@ Public Function deleteFromArr(arr As Variant, value As Variant, Optional count A
     Else
         deleteFromArr = newArr.items
     End If
+
+    Set newArr = Nothing
 End Function
+
 
 Public Function addToArr(arr As Variant, value As Variant) As Variant
     Dim newArr As Object
     Dim i As Integer
     Dim item As Variant
 
-    
     Set newArr = CreateObject("Scripting.Dictionary")
     
     If IsEmpty(arr) Then
         addToArr = Array(value)
+        Set newArr = Nothing
         Exit Function
     End If
     
@@ -134,7 +139,10 @@ Public Function addToArr(arr As Variant, value As Variant) As Variant
 
     If i = 1 Then
         addToArr = Array(value)
+        Set newArr = Nothing
         Exit Function
     End If
+
     addToArr = newArr.items
+    Set newArr = Nothing
 End Function

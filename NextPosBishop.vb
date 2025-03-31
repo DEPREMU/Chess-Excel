@@ -3,7 +3,7 @@ Option Explicit
 
 Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Optional emulatePiece As Variant) As Variant
     getNextPosBishop = Empty
-
+    
     Dim letter As String
     Dim indexLetter As Integer
     Dim number As String
@@ -22,7 +22,7 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
     Dim localPiece As Variant
     Set availablePos = CreateObject("Scripting.Dictionary")
     valuesAdded = 0
-
+    
     If IsMissing(emulatePiece) Then emulatePiece = Array("", "")
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
         lastPos = getPosPlayer(CStr(emulatePiece(0)), Not boolPlayerOne)
@@ -39,12 +39,12 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         End If
         buttons(emulatePiece(1))("isPiece") = True
     End If
-
+    
     currentPos = getPosPlayer(piece, boolPlayerOne)
     letter = Mid(currentPos, 1, 1)
     indexLetter = numbers(letter)
     number = Mid(currentPos, 2, 1)
-
+    
     ' Top Left
     i = indexLetter
     j = CInt(number)
@@ -82,7 +82,7 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Top Right
     i = indexLetter
     j = CInt(number)
@@ -120,7 +120,7 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Bottom Left
     i = indexLetter
     j = CInt(number)
@@ -158,7 +158,7 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     ' Bottom Right
     i = indexLetter
     j = CInt(number)
@@ -196,7 +196,7 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         availablePos.Add btn, True
         valuesAdded = valuesAdded + 1
     Loop
-
+    
     If emulatePiece(0) <> "" And emulatePiece(1) <> "" Then
         If boolPlayerOne Then
             playerTwo(emulatePiece(0))("newPos") = lastPos
@@ -209,8 +209,9 @@ Public Function getNextPosBishop(piece As String, boolPlayerOne As Boolean, Opti
         buttons(lastPos)("piece") = lastPiece
         buttons(emulatePiece(1))("isPiece") = lastIsPieceBtns
     End If
-
+    
     If valuesAdded = 0 Then Exit Function
-
+    
     getNextPosBishop = availablePos.keys
+    Set availablePos = Nothing
 End Function

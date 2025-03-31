@@ -21,19 +21,16 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
     Dim leftOrRight As String
     Dim posP2 As String
     
-    
     Set availablePos = CreateObject("Scripting.Dictionary")
     Set valueToReturn = CreateObject("Scripting.Dictionary")
     
     pieceType = playerOne(piece)("type")
     
     Select Case pieceType
-            
         Case "Pawn"
             letter = Mid(playerOne(piece)("newPos"), 1, 1)
             indexLetter = numbers(letter)
             number = Mid(playerOne(piece)("newPos"), 2, 1)
-            
             
             For i = 0 To 1
                 leftOrRight = IIf(i = 0, 1, - 1)
@@ -49,7 +46,7 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
                     End If
                 End If
             Next i
-            
+
             If btnLeftPos <> "" Then
                 If buttons(btnLeftPos)("player") = 2 Then
                     If playerTwo(buttons(btnLeftPos)("piece"))("enPassant") Then
@@ -58,7 +55,6 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
                     End If
                 End If
             End If
-            
             
             If btnRightPos <> "" Then
                 If buttons(btnRightPos)("player") = 2 Then
@@ -103,19 +99,23 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
         Case "Rook"
             values = getNextPosRook(piece, True, emulatePiece)
             If Not IsEmpty(values) Then getAvailablePosP1 = values
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
             
         Case "Knight"
-            
             getAvailablePosP1 = getNextPosKnight(piece, True)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
             
         Case "Bishop"
             getAvailablePosP1 = getNextPosBishop(piece, True, emulatePiece)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
             
         Case "Queen"
-            
             values = getNextPosRook(piece, True, emulatePiece)
             If Not IsEmpty(values) Then
                 For Each value In values
@@ -133,6 +133,8 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
         Case "King"
             values = getPosKingP1(piece, CStr(playerOne(piece)("newPos")))
             If Not IsEmpty(values) Then getAvailablePosP1 = values
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
             Exit Function
     End Select
     
@@ -143,13 +145,19 @@ Public Function getAvailablePosP1(piece As String, Optional emulatePiece As Vari
             i = i + 1
         End If
     Next value
-    If i = 1 Then Exit Function
+    Set availablePos = Nothing
+    If i = 1 Then
+        Set valueToReturn = Nothing
+        Exit Function
+    End If
     
     getAvailablePosP1 = valueToReturn.items
+
+    Set valueToReturn = Nothing
 End Function
 
+
 Public Function getPosKingP1(piece As String, position As String) As Variant
-    
     Dim letter As String
     Dim indexLetter As Integer
     Dim number As String
@@ -197,4 +205,6 @@ Public Function getPosKingP1(piece As String, position As String) As Variant
     Else
         getPosKingP1 = availablePos.keys
     End If
+
+    Set availablePos = Nothing
 End Function
