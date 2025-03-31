@@ -114,12 +114,12 @@ Public Function rePaintCases()
     For Each value In buttons.keys
         If frm.Controls(value).BackColor <> buttons(value)("bgcolor") Then
             If playerOne("E1King")("newPos") = value _
-                 And boolCheckPlayer1 Then GoTo ContinueLoop
+                 And boolCheckPlayer1 Then Goto ContinueLoop
             If playerTwo("E8King")("newPos") = value _
-                 And boolCheckPlayer2 Then GoTo ContinueLoop
+                 And boolCheckPlayer2 Then Goto ContinueLoop
             frm.Controls(value).BackColor = buttons(value)("bgcolor")
         End If
-ContinueLoop:
+        ContinueLoop :
     Next value
     
     paintLastMovementCases
@@ -162,10 +162,5 @@ Public Function getNextPosPlayer(piece As String, boolPlayerOne As Boolean) As V
 End Function
 
 Public Function getNextPosPlayerNotByNextPos(piece As String, boolPlayerOne As Boolean) As Variant
-    If boolPlayerOne Then
-        getNextPosPlayerNotByNextPos = getAvailablePosP1(piece)
-    Else
-        getNextPosPlayerNotByNextPos = getAvailablePosP2(piece)
-    End If
+    getNextPosPlayerNotByNextPos = getNextPos(piece)
 End Function
-

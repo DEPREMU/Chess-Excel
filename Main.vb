@@ -78,16 +78,16 @@ Public Sub disablePiece(piece As String)
     rePaintCases
     If playerOneTurn Then
         If Not playerOne(piece)("moved") Then Exit Sub
-        playerOne(piece)("nextPos") = getAvailablePosP1(piece)
+        playerOne(piece)("nextPos") = getNextPos(piece)
         playerOne(piece)("moved") = False
         swapLabels
     Else
         If Not playerTwo(piece)("moved") Then Exit Sub
-        playerTwo(piece)("nextPos") = getAvailablePosP2(piece)
+        playerTwo(piece)("nextPos") = getNextPos(piece)
         playerTwo(piece)("moved") = False
         swapLabels
     End If
-    checkGameStatus (piece)
+    checkGameStatus(piece)
     activePiece = ""
     playerOneTurn = Not playerOneTurn
 End Sub
@@ -95,11 +95,10 @@ End Sub
 Public Function updateMoves(piece As String, boolPlayerOne As Boolean) As Variant
     Dim availablePos As Variant
 
+    availablePos = getNextPos(piece)
     If boolPlayerOne Then
-        availablePos = getAvailablePosP1(piece)
         playerOne(piece)("nextPos") = availablePos
     Else
-        availablePos = getAvailablePosP2(piece)
         playerTwo(piece)("nextPos") = availablePos
     End If
 
@@ -208,7 +207,7 @@ Public Function movePiece(button As String, piece As String)
     If typePiece = "Pawn" Then
         If ArrayContains(Array("1", "8"), Mid(button, 2, 1)) Then
             PromotePawn.Show
-            isCheck getPosPlayer(IIf(Not playerOneTurn, "E1King", "E8King"), Not playerOneTurn), Not playerOneTurn
+            isCheck getPosPlayer(IIf( Not playerOneTurn, "E1King", "E8King"), Not playerOneTurn), Not playerOneTurn
         End If
         If Not IsEmpty(enPassant) Then
             If ArrayContains(Array(1, 2), enPassant(2)) And enPassant(1) = button Then
@@ -236,7 +235,7 @@ Public Function movePiece(button As String, piece As String)
         
         If isFirstMove Then
             If boolMoreThan1 Then
-                btn = Mid(piece, 1, 1) & CStr(CInt(Mid(piece, 2, 1)) + IIf(playerOneTurn, 1, -1))
+                btn = Mid(piece, 1, 1) & CStr(CInt(Mid(piece, 2, 1)) + IIf(playerOneTurn, 1, - 1))
                 If Not buttons(btn)("isPiece") Then
                     buttons(btn)("enPassant") = activePiece
                     If playerOneTurn Then
@@ -270,7 +269,7 @@ Public Function movePiece(button As String, piece As String)
     lastMovement = Array(getPosPlayer(piece, playerOneTurn), button)
     frm.Controls(piece).Left = CDbl(buttons(button)("posxy")("x")) + 5
     frm.Controls(piece).Top = CDbl(buttons(button)("posxy")("y")) + 5
-    addPieceToEatenPieces (button)
+    addPieceToEatenPieces(button)
     clearButtons piece, button
 
 

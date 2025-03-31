@@ -1,172 +1,309 @@
 Option Explicit
+Dim buttonHandlers() As New clsButtonHandler
 
-Dim frm As UserForm
+Dim letter As Variant
+Dim value As Variant
 
-Private Sub Init()
-    Set frm = UserForms(0)
+Private Sub ButtonStartGame_Click()
+    If boolPlaying Or gameFinished Then Exit Sub
+    changeStateButtons
+    boolPlaying = True
+    LComments.Caption = "Player one turn"
+    boolCheckPlayer1 = False
+    boolCheckPlayer2 = False
+    gameFinished = False
 End Sub
 
-Public Sub placePieces()
-    Dim value As Variant
-    Dim currentPos As Variant
-    If frm Is Nothing Then Init
-
-    For Each value In playerOne.keys
-        If Not playerOne(value)("dead") Then
-            currentPos = playerOne(value)("newPos")
-            frm.Controls(value).Left = frm.Controls(currentPos).Left + 5
-            frm.Controls(value).Top = frm.Controls(currentPos).Top + 5
-        End If
-    Next value
-
-    For Each value In playerTwo.keys
-        If Not playerTwo(value)("dead") Then
-            currentPos = playerTwo(value)("newPos")
-            frm.Controls(value).Left = frm.Controls(currentPos).Left + 5
-            frm.Controls(value).Top = frm.Controls(currentPos).Top + 5
-        End If
-    Next value
+Private Sub ButtonRestartGame_Click()
+    If Not boolPlaying And Not gameFinished Then Exit Sub
+    '! If Not playerOneTurn Then swapLabels
+    changeStateButtons
+    boolPlaying = False
+    If activePiece <> "" Then disablePiece activePiece
+    activePiece = ""
+    repositionPieces
+    initializeGame
+    LComments.Caption = "Game restarted"
+    boolCheckPlayer1 = False
+    boolCheckPlayer1 = False
+    rePaintCases
 End Sub
 
-Public Function repositionPieces()
-    If frm Is Nothing Then Init
-    Dim piece As Variant
-    Dim buttonPiece As Variant
+Private Sub UserForm_Initialize()
+    initializeGame
+End Sub
+
+Public Function initializeGame()
+    boolPlaying = False
+    gameFinished = False
+    playerOneTurn = True
+    pathGame = _
+        "C:\Users\zae47\OneDrive\Documentos\ArchivosParaLaUniBIS\Tareas\Tetra4\AppsDesign\Ajedrez\Chess-Excel\"
+    piecesEatenP1 = 0
+    piecesEatenP2 = 0
+    lastMovement = Empty
     
-    For Each piece In playerOne.keys
-        buttonPiece = Mid(piece, 1, 2)
-        frm.Controls(piece).Left = CInt(buttons(buttonPiece)("posxy")("x")) + 5
-        frm.Controls(piece).Top = CInt(buttons(buttonPiece)("posxy")("y")) + 5
-    Next piece
-    For Each piece In playerTwo.keys
-        buttonPiece = Mid(piece, 1, 2)
-        frm.Controls(piece).Left = buttons(buttonPiece)("posxy")("x") + 5
-        frm.Controls(piece).Top = buttons(buttonPiece)("posxy")("y") + 5
-    Next piece
-End Function
-
-Public Sub swapLabels()
-    If frm Is Nothing Then Init
-
+    Set playerOne = CreateObject("Scripting.Dictionary")
+    Set playerTwo = CreateObject("Scripting.Dictionary")
+    Set buttons = CreateObject("Scripting.Dictionary")
+    Set letters = CreateObject("Scripting.Dictionary")
+    Set numbers = CreateObject("Scripting.Dictionary")
+    Set colors = CreateObject("Scripting.Dictionary")
+    
     Dim i As Integer
-    Dim letters As String
-    Dim numbers As String
+    Dim ctrl As control
+    Dim piece as variant
+    Dim piece1 As String
+    Dim piece2 As String
+    Dim piece3 As String
+    Dim piece4 As String
+    Dim letter As Variant
+    Dim isPiece As Object
+    Dim pieceP1_1 As Object
+    Dim pieceP1_2 As Object
+    Dim pieceP2_1 As Object
+    Dim pieceP2_2 As Object
+    Dim posButton As Object
+    Dim buttonLocal As String
+    Dim chessPiece1 As Object
+    Dim chessPiece2 As Object
+    Dim buttonCompleted As Object
+    Dim possibleNextPositionP1 As variant
+    Dim possibleNextPositionP2 As variant
+    Dim possibleNextPositionP1_1 As variant
+    Dim possibleNextPositionP1_2 As variant
+    Dim possibleNextPositionP2_1 As variant
+    Dim possibleNextPositionP2_2 As variant
+    
+    
+    colors.Add "danger", &H33FF
+    colors.Add "caseSelected", &HFFD700
+    colors.Add "pieceEaterAndCaseSelected", &H80FF &
+    colors.Add "pieceEater", &HFF6347
+    colors.Add "BlackCase", RGB(125, 135, 150)
+    colors.Add "WhiteCase", RGB(240, 217, 181)
+    colors.Add "lastMovement", &HFFC0FF
 
-    If frm.LA.Caption = "A" Then
-        letters = "HGFEDCBA"
-        numbers = "87654321"
-    Else
-        letters = "ABCDEFGH"
-        numbers = "12345678"
-    End If
-
-    For i = 1 To 8
-        frm.Controls("L" & Chr(64 + i)).Caption = Mid(letters, i, 1)
-        frm.Controls("L" & i).Caption = Mid(numbers, i, 1)
-    Next i
-    swapButtons
-End Sub
-
-Public Sub swapButtons()
-    If frm Is Nothing Then Init
-
-    Dim i As Integer
-    Dim j As Integer
-    Dim k As Integer
-    Dim value As Variant
-
-
-    If frm.LA.Caption = "H" Then
-        Dim z As Integer
-        z = 8
-        For Each value In numbers.keys
-            i = 1
-            j = 8
-            For k = 1 To 8
-                frm.Controls(CStr(value) & CStr(i)).Left = buttons(letters(CStr(z)) & CStr(j))("posxy")("x")
-                frm.Controls(CStr(value) & CStr(i)).Top = buttons(letters(CStr(z)) & CStr(j))("posxy")("y")
-                i = i + 1
-                j = j - 1
-            Next k
-            z = z - 1
-        Next value
-    Else
-        For Each value In buttons.keys
-            frm.Controls(value).Left = buttons(value)("posxy")("x")
-            frm.Controls(value).Top = buttons(value)("posxy")("y")
-        Next value
-    End If
-    placePieces
-End Sub
-
-Public Sub changeStateButtons()
-    If frm Is Nothing Then Init
-    Dim button As Variant
-
-    For Each button In buttons.keys
-        frm.Controls(button).Enabled = Not frm.Controls(button).Enabled
-    Next button
-End Sub
-
-Public Function rePaintCases()
-    If frm Is Nothing Then Init
-
-    Dim value As Variant
-    For Each value In buttons.keys
-        If frm.Controls(value).BackColor <> buttons(value)("bgcolor") Then
-            If playerOne("E1King")("newPos") = value _
-                 And boolCheckPlayer1 Then Goto ContinueLoop
-            If playerTwo("E8King")("newPos") = value _
-                 And boolCheckPlayer2 Then Goto ContinueLoop
-            frm.Controls(value).BackColor = buttons(value)("bgcolor")
-        End If
-        ContinueLoop :
+    i = 1
+    For Each value In Array("A", "B", "C", "D", "E", "F", "G", "H")
+        numbers.Add value, i
+        letters.Add CStr(i), value
+        i = i + 1
     Next value
 
-    paintLastMovementCases
-End Function
+    
+    ' Make buttons info -------------------------------------------------------
+    For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
+        For i = 1 To 8
+            buttonLocal = letter & CStr(i)
+            Set buttonCompleted = CreateObject("Scripting.Dictionary")
+            Set posButton = CreateObject("Scripting.Dictionary")
+            posButton.Add "x", Controls(buttonLocal).Left
+            posButton.Add "y", Controls(buttonLocal).Top
+            
+            buttonCompleted.Add "isPiece", False
+            buttonCompleted.Add "posxy", posButton
+            buttonCompleted.Add "bgcolor", colors("WhiteCase")
+            buttonCompleted.Add "player", 0
+            buttonCompleted.Add "name", buttonLocal
+            buttonCompleted.Add "enPassant", ""
+            
+            Dim bool1 As Boolean
+            Dim bool2 As Boolean
+            bool1 = ArrayContains(Array("A", "C", "E", "G"), letter) _
+                 And ArrayContains(Array(1, 3, 5, 7), i)
+            bool2 = ArrayContains(Array("B", "D", "F", "H"), letter) _
+                 And ArrayContains(Array(2, 4, 6, 8), i)
+            If bool1 Or bool2 Then
+                buttonCompleted("bgcolor") = colors("BlackCase")
+            End If
+            buttons.Add buttonLocal, buttonCompleted
+            Controls(buttonLocal).Enabled = False
+            Controls(buttonLocal).ZOrder(1)
+        Next i
+    Next letter
+    
+    ' Pawns pieces -------------------------------------------------------------
+    For Each letter In Array("A", "B", "C", "D", "E", "F", "G", "H")
+        Set chessPiece1 = CreateObject("Scripting.Dictionary")
+        Set chessPiece2 = CreateObject("Scripting.Dictionary")
+        possibleNextPositionP1 = Array(letter & "3", letter & "4")
+        possibleNextPositionP2 = Array(letter & "6", letter & "5")
+        
+        piece1 = CStr(letter) & "2"
+        piece2 = CStr(letter) & "7"
+        
+        For Each value In Array(piece1, piece2)
+            buttons(value)("isPiece") = True
+            buttons(value)("player") = iif(value = piece1, 1, 2)
+            buttons(value)("piece") = value & "Pawn"
+        Next value
 
-Public Function isPlayerOnePiece(piece As String) As Boolean
-    isPlayerOnePiece = playerOne.exists(piece)
-End Function
+        chessPiece1.Add "firstPos", piece1
+        chessPiece2.Add "firstPos", piece2
+        chessPiece1.Add "newPos", piece1
+        chessPiece2.Add "newPos", piece2
+        chessPiece1.Add "nextPos", possibleNextPositionP1
+        chessPiece2.Add "nextPos", possibleNextPositionP2
+        chessPiece1.Add "type", "Pawn"
+        chessPiece2.Add "type", "Pawn"
+        chessPiece1.Add "piecesEater", Empty
+        chessPiece2.Add "piecesEater", Empty
 
-Public Function getTypePiece(piece As String, boolPlayerOne As Boolean) As String
-    If boolPlayerOne Then
-        getTypePiece = playerOne(piece)("type")
-    Else
-        getTypePiece = playerTwo(piece)("type")
-    End If
-End Function
+        For Each value In Array("firstMove", "moved", "danger", "dead", "enPassant")
+            chessPiece1.Add value, iif(value = "firstMove", True, False)
+            chessPiece2.Add value, iif(value = "firstMove", True, False)
+        Next value
+        
+        playerOne.Add piece1 & "Pawn", chessPiece1
+        playerTwo.Add piece2 & "Pawn", chessPiece2
+    Next letter
+    
+    ' Pieces A->C And F->H -----------------------------------------------------
+    For Each piece In Array("Rook", "Knight", "Bishop")
+        possibleNextPositionP1_1 = Empty
+        possibleNextPositionP1_2 = Empty
+        possibleNextPositionP2_1 = Empty
+        possibleNextPositionP2_2 = Empty
+        Set pieceP1_1 = CreateObject("Scripting.Dictionary")
+        Set pieceP1_2 = CreateObject("Scripting.Dictionary")
+        Set pieceP2_1 = CreateObject("Scripting.Dictionary")
+        Set pieceP2_2 = CreateObject("Scripting.Dictionary")
+        
+        If piece = "Rook" Then
+            ' Player one
+            piece1 = "A1"
+            piece2 = "H1"
+            ' Player two
+            piece3 = "A8"
+            piece4 = "H8"
+        ElseIf piece = "Knight" Then
+            ' Player one
+            piece1 = "B1"
+            piece2 = "G1"
+            possibleNextPositionP1_1 = Array("A3", "C3")
+            possibleNextPositionP1_2 = Array("F3", "H3")
+            
+            ' Player two
+            piece3 = "B8"
+            piece4 = "G8"
+            possibleNextPositionP2_1 = Array("A6", "C6")
+            possibleNextPositionP2_2 = Array("F6", "H6")
+        ElseIf piece = "Bishop" Then
+            ' Player one
+            piece1 = "C1"
+            piece2 = "F1"
+            'Player two
+            piece3 = "C8"
+            piece4 = "F8"
+        End If
+        
+        ' Player one
+        pieceP1_1.Add "firstPos", piece1
+        pieceP1_2.Add "firstPos", piece2
+        pieceP1_1.Add "newPos", piece1
+        pieceP1_2.Add "newPos", piece2
+        pieceP1_1.Add "nextPos", possibleNextPositionP1_1
+        pieceP1_2.Add "nextPos", possibleNextPositionP1_2
+        pieceP1_1.Add "type", piece
+        pieceP1_2.Add "type", piece
+        pieceP1_1.Add "piecesEater", Empty
+        pieceP1_2.Add "piecesEater", Empty
+        
+        ' Player two
+        pieceP2_1.Add "firstPos", piece3
+        pieceP2_2.Add "firstPos", piece4
+        pieceP2_1.Add "newPos", piece3
+        pieceP2_2.Add "newPos", piece4
+        pieceP2_1.Add "nextPos", possibleNextPositionP2_1
+        pieceP2_2.Add "nextPos", possibleNextPositionP2_2
+        pieceP2_1.Add "type", piece
+        pieceP2_2.Add "type", piece
+        pieceP2_1.Add "piecesEater", Empty
+        pieceP2_2.Add "piecesEater", Empty
+        
 
-Public Function getDeadState(piece As String, boolPlayerOne As Boolean) As Boolean
-    If boolPlayerOne Then
-        getDeadState = playerOne(piece)("dead")
-    Else
-        getDeadState = playerTwo(piece)("dead")
-    End If
-End Function
+        Dim valueIsFirstMove as boolean
+        For Each value In Array("moved", "firstMove", "dead")
+            valueIsFirstMove = iif(CStr(value) = "firstMove", True, False)
+            pieceP1_1.Add CStr(value), valueIsFirstMove
+            pieceP1_2.Add CStr(value), valueIsFirstMove
+            pieceP2_1.Add CStr(value), valueIsFirstMove
+            pieceP2_2.Add CStr(value), valueIsFirstMove
+        Next value
+        
+        i = 1
+        For Each value In Array(piece1, piece2, piece3, piece4)
+            buttons(CStr(value))("isPiece") = True
+            buttons(CStr(value))("player") = iif(i > 2, 2, 1)
+            buttons(CStr(value))("piece") = CStr(value) & piece
+            i = i + 1
+        Next value
+        
+        playerOne.Add piece1 & piece, pieceP1_1
+        playerOne.Add piece2 & piece, pieceP1_2
+        
+        playerTwo.Add piece3 & piece, pieceP2_1
+        playerTwo.Add piece4 & piece, pieceP2_2
+        
+    Next piece
+    
+    ' Queen and King -----------------------------------------------------------
+    For Each piece In Array("Queen", "King")
+        Set chessPiece1 = CreateObject("Scripting.Dictionary")
+        Set chessPiece2 = CreateObject("Scripting.Dictionary")
+        
+        piece1 = iif(piece = "Queen", "D1", "E1")
+        piece2 = iif(piece = "Queen", "D8", "E8")
+        
+        For Each value In Array(piece1, piece2)
+            buttons(value)("isPiece") = True
+            buttons(value)("player") = iif(value = piece1, 1, 2)
+            buttons(value)("piece") = value & piece
+        Next value
+        
+        chessPiece1.Add "firstPos", piece1
+        chessPiece2.Add "firstPos", piece2
+        chessPiece1.Add "newPos", piece1
+        chessPiece2.Add "newPos", piece2
+        chessPiece1.Add "nextPos", Empty
+        chessPiece2.Add "nextPos", Empty
+        chessPiece1.Add "type", piece
+        chessPiece2.Add "type", piece
+        
+        For Each value In Array("firstMove", "moved", "danger", "dead")
+            chessPiece1.Add value, iif(value = "firstMove", True, False)
+            chessPiece2.Add value, iif(value = "firstMove", True, False)
+        Next value
 
-Public Function getPosPlayer(piece As String, boolPlayerOne As Boolean) As String
-    If boolPlayerOne Then
-        getPosPlayer = playerOne(piece)("newPos")
-    Else
-        getPosPlayer = playerTwo(piece)("newPos")
-    End If
+        chessPiece1.Add "piecesEater", Empty
+        chessPiece2.Add "piecesEater", Empty
+        
+        
+        playerOne.Add piece1 & piece, chessPiece1
+        playerTwo.Add piece2 & piece, chessPiece2
+        
+    Next piece
+    
+    ' Make controls dinamically -----------------------------------------------
+    i = 0
+    For Each ctrl In Me.Controls
+        If TypeName(ctrl) = "CommandButton" Then
+            ReDim Preserve buttonHandlers(i)
+            Set buttonHandlers(i) = New clsButtonHandler
+            Set buttonHandlers(i).btn = ctrl
+            i = i + 1
+        ElseIf TypeName(ctrl) = "Label" Then
+            ReDim Preserve buttonHandlers(i)
+            Set buttonHandlers(i) = New clsButtonHandler
+            Set buttonHandlers(i).label = ctrl
+            i = i + 1
+        End If
+    Next ctrl
+    
+    For Each value In colors.keys
+        Controls("L" & CStr(value)).BackColor = colors(value)
+    Next value
+    rePaintCases
+    
 End Function
-
-Public Function getNextPosPlayer(piece As String, boolPlayerOne As Boolean) As Variant
-    If boolPlayerOne Then
-        getNextPosPlayer = playerOne(piece)("nextPos")
-    Else
-        getNextPosPlayer = playerTwo(piece)("nextPos")
-    End If
-End Function
-
-Public Function getNextPosPlayerNotByNextPos(piece As String, boolPlayerOne As Boolean) As Variant
-    If boolPlayerOne Then
-        getNextPosPlayerNotByNextPos = getAvailablePosP1(piece)
-    Else
-        getNextPosPlayerNotByNextPos = getAvailablePosP2(piece)
-    End If
-End Function
-
