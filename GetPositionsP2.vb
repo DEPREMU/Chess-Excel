@@ -24,57 +24,10 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
     
     Select Case pieceType
         Case "Pawn"
-            letter = Mid(playerTwo(piece)("newPos"), 1, 1)
-            indexLetter = numbers(letter)
-            number = Mid(playerTwo(piece)("newPos"), 2, 1)
-            For i = 0 To 1
-                leftOrRight = IIf(i = 0, 1, -1)
-                If letters(CStr(indexLetter - leftOrRight)) <> "" Then
-                    btn = letters(CStr(indexLetter - leftOrRight)) & number
-                    If btn <> "" Then
-                        If buttons(btn)("player") = 1 Then
-                            If playerOne(buttons(btn)("piece"))("enPassant") Then
-                                posP1 = playerOne(buttons(btn)("piece"))("newPos")
-                                availablePos.Add Mid(posP1, 1, 1) & CStr(CInt(Mid(posP1, 2, 1)) - 1), True
-                            End If
-                        End If
-                    End If
-                End If
-            Next i
-            
-            ' Move forward
-            If CInt(number) > 1 Then
-                btn = letter & CStr(CInt(number) - 1)
-                If Not buttons(btn)("isPiece") Then
-                    availablePos.Add btn, True
-                    If playerTwo(piece)("firstMove") Then
-                        If Not buttons(letter & CStr(CInt(number) - 2))("isPiece") Then
-                            availablePos.Add letter & CStr(CInt(number) - 2), True
-                        End If
-                    End If
-                End If
-            End If
-            
-            ' Capture diagonally left
-            If indexLetter > 1 And CInt(number) > 1 Then
-                btn = letters(CStr(indexLetter - 1)) & CStr(CInt(number) - 1)
-                If buttons(btn)("player") = 1 Then
-                    availablePos.Add btn, True
-                    playerOne(buttons(btn)("piece"))("danger") = True
-                    playerOne(buttons(btn)("piece"))("piecesEater") = addToArr(playerOne(buttons(btn)("piece"))("piecesEater"), piece)
-                End If
-            End If
-            
-            ' Capture diagonally right
-            If indexLetter < 8 And CInt(number) > 1 Then
-                btn = letters(CStr(indexLetter + 1)) & CStr(CInt(number) - 1)
-                If buttons(btn)("player") = 1 Then
-                    playerOne(buttons(btn)("piece"))("danger") = True
-                    playerOne(buttons(btn)("piece"))("piecesEater") = addToArr(playerOne(buttons(btn)("piece"))("piecesEater"), piece)
-                    availablePos.Add btn, True
-                End If
-            End If
-
+            getAvailablePosP2 = getNextPosPawn(piece, False)
+            Set availablePos = Nothing
+            Set valueToReturn = Nothing
+            Exit Function
         Case "Rook"
             getAvailablePosP2 = getNextPosRook(piece, False, emulatePiece)
             Set availablePos = Nothing
@@ -110,12 +63,7 @@ Public Function getAvailablePosP2(piece As String, Optional emulatePiece As Vari
             End If
 
         Case "King"
-            values = possiblePosKingP2(piece, CStr(playerTwo(piece)("newPos")))
-            If Not IsEmpty(values) Then
-                getAvailablePosP2 = values
-            Else
-                getAvailablePosP2 = Empty
-            End If
+            getAvailablePosP2 = getNextPosKing(piece, CStr(playerTwo(piece)("newPos")), False)
             Set availablePos = Nothing
             Set valueToReturn = Nothing
             Exit Function
@@ -153,7 +101,7 @@ Public Function possiblePosKingP2(piece As String, position As String) As Varian
     number = Mid(playerTwo(piece)("newPos"), 2, 1)
     
     Dim directions As Variant
-    directions = Array(Array(0, 1), Array(-1, 1), Array(1, 1), Array(-1, 0), Array(1, 0), Array(0, -1), Array(-1, -1), Array(1, -1))
+    directions = Array(Array(0, 1), Array( - 1, 1), Array(1, 1), Array( - 1, 0), Array(1, 0), Array(0, - 1), Array( - 1, - 1), Array(1, - 1))
     
     valuesAdded = 0
     

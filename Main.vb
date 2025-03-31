@@ -87,7 +87,7 @@ Public Sub disablePiece(piece As String)
         playerTwo(piece)("moved") = False
         swapLabels
     End If
-    checkGameStatus(piece)
+    checkGameStatus (piece)
     activePiece = ""
     playerOneTurn = Not playerOneTurn
 End Sub
@@ -136,6 +136,14 @@ Public Sub paintCases(boolPlayerOne As Boolean)
     isCheckP2 = isCheck(CStr(playerTwo(kingP2)("newPos")), False)
     
     If Not isCheckP1 And Not isCheckP2 Then Exit Sub
+    
+    If isCheckP1 And Not boolPlayerOne Then
+        finishGame
+        Exit Sub
+    ElseIf isCheckP2 And boolPlayerOne Then
+        finishGame
+        Exit Sub
+    End If
     
     If isCheckP1 Then
         piecesEater = playerOne(kingP1)("piecesEater")
@@ -200,7 +208,7 @@ Public Function movePiece(button As String, piece As String)
     If typePiece = "Pawn" Then
         If ArrayContains(Array("1", "8"), Mid(button, 2, 1)) Then
             PromotePawn.Show
-            isCheck getPosPlayer(IIf( Not playerOneTurn, "E1King", "E8King"), Not playerOneTurn), Not playerOneTurn
+            isCheck getPosPlayer(IIf(Not playerOneTurn, "E1King", "E8King"), Not playerOneTurn), Not playerOneTurn
         End If
         If Not IsEmpty(enPassant) Then
             If ArrayContains(Array(1, 2), enPassant(2)) And enPassant(1) = button Then
@@ -228,7 +236,7 @@ Public Function movePiece(button As String, piece As String)
         
         If isFirstMove Then
             If boolMoreThan1 Then
-                btn = Mid(piece, 1, 1) & CStr(CInt(Mid(piece, 2, 1)) + IIf(playerOneTurn, 1, - 1))
+                btn = Mid(piece, 1, 1) & CStr(CInt(Mid(piece, 2, 1)) + IIf(playerOneTurn, 1, -1))
                 If Not buttons(btn)("isPiece") Then
                     buttons(btn)("enPassant") = activePiece
                     If playerOneTurn Then
@@ -262,7 +270,7 @@ Public Function movePiece(button As String, piece As String)
     lastMovement = Array(getPosPlayer(piece, playerOneTurn), button)
     frm.Controls(piece).Left = CDbl(buttons(button)("posxy")("x")) + 5
     frm.Controls(piece).Top = CDbl(buttons(button)("posxy")("y")) + 5
-    addPieceToEatenPieces(button)
+    addPieceToEatenPieces (button)
     clearButtons piece, button
 
 
